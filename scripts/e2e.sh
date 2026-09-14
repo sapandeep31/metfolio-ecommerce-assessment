@@ -19,14 +19,25 @@ API_PID=""
 WEB_PID=""
 
 cleanup() {
+  # Kill process groups first if set, else direct pids
   for pid in "$WEB_PID" "$API_PID"; do
     if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
-      kill "$pid" 2>/dev/null || true
+      # Try terminating the process group first, fallback to individual PID
+      kill -TERM -- "-$pid" 2>/dev/null || kill -TERM "$pid" 2>/dev/null || true
+    fi
+  done
+
+  # Give processes a brief moment to shut down gracefully
+  sleep 0.5
+
+  for pid in "$WEB_PID" "$API_PID"; do
+    if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
+      kill -9 -- "-$pid" 2>/dev/null || kill -9 "$pid" 2>/dev/null || true
       wait "$pid" 2>/dev/null || true
     fi
   done
 }
-trap cleanup EXIT
+trap cleanup EXIT INT TERM HUP
 
 if [[ -f .env ]]; then
   set -a
@@ -54,13 +65,26 @@ export RATE_LIMIT_GLOBAL=100000
 export RATE_LIMIT_AUTH=100000
 export RATE_LIMIT_CHECKOUT=100000
 
-# A leftover server from an interrupted run is the worst failure mode here: the
-# new process fails to bind, the suite talks to the stale one, and the results
-# describe code that is no longer on disk. The API is probed on /health because
-# its root path 404s, which `curl -f` would read as "nothing is listening".
+# Clear any stale servers on API_PORT and WEB_PORT from interrupted runs or dev sessions
+for port in "$API_PORT" "$WEB_PORT"; do
+  if command -v lsof >/dev/null 2>&1; then
+    stale_pids=$(lsof -ti :"$port" 2>/dev/null || true)
+    if [[ -n "$stale_pids" ]]; then
+      echo "Killing stale process on port :${port} (PIDs: ${stale_pids})"
+      kill -TERM $stale_pids 2>/dev/null || true
+      sleep 0.5
+      kill -9 $stale_pids 2>/dev/null || true
+    fi
+  fi
+done
+
+pkill -f 'apps/api/dist/main.js' 2>/dev/null || true
+pkill -f 'next start' 2>/dev/null || true
+sleep 0.5
+
 for url in "${API_BASE_URL}/health" "${APP_BASE_URL}/"; do
   if curl -sf "$url" >/dev/null 2>&1; then
-    echo "Something is already serving ${url}. Stop it first:" >&2
+    echo "Something is still serving ${url} after cleanup attempt. Stop it first:" >&2
     echo "  pkill -f 'apps/api/dist/main.js'; pkill -f 'next start'" >&2
     exit 1
   fi
@@ -78,7 +102,7 @@ NODE_ENV=production pnpm build
 echo "==> Starting api, web"
 node apps/api/dist/main.js >/tmp/shop-e2e-api.log 2>&1 &
 API_PID=$!
-pnpm --filter @shop/web exec next start -p "$WEB_PORT" >/tmp/shop-e2e-web.log 2>&1 &
+(cd apps/web && ./node_modules/.bin/next start -p "$WEB_PORT") >/tmp/shop-e2e-web.log 2>&1 &
 WEB_PID=$!
 
 wait_for() {

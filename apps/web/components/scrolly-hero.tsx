@@ -9,12 +9,23 @@ export function ScrollyHero() {
   return (
     <section className="editorial-hero-fullscreen" aria-labelledby="hero-title">
       <div className="editorial-hero-bg" aria-hidden="true">
-        <img
-          className="editorial-hero-img"
-          src="/media/landing-hero-poster.webp"
-          alt=""
-          fetchPriority="high"
-        />
+        <video
+          className="editorial-hero-video"
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster="/media/landing-hero-poster.webp"
+          preload="auto"
+        >
+          <source src="/media/landing-hero.webm" type="video/webm" />
+          <source src="/media/landing-hero.mp4" type="video/mp4" />
+          <img
+            className="editorial-hero-img"
+            src="/media/landing-hero.gif"
+            alt=""
+          />
+        </video>
         <div className="editorial-hero-vignette" />
         <div className="editorial-hero-glow" />
       </div>
