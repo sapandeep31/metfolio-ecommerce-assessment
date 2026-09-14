@@ -73,6 +73,10 @@ check_reachable "${DATABASE_URL:-}" Postgres || failed=1
 check_reachable "${REDIS_URL:-}" Redis || failed=1
 [[ $failed -eq 0 ]] || exit 1
 
+# Ensure workspace packages (e.g. @shop/shared, @shop/db, @shop/payments) are built
+# before starting watch processes so module imports succeed on fresh clones.
+pnpm --filter '@shop/*' --filter '!@shop/api' --filter '!@shop/web' --filter '!@shop/e2e' run build >/dev/null 2>&1 || true
+
 # `exec` so Ctrl-C reaches turbo directly and the persistent tasks shut down
 # cleanly instead of being orphaned behind a wrapper shell.
 exec pnpm exec turbo run dev "$@"

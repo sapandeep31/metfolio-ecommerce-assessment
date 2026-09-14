@@ -11,6 +11,15 @@
  */
 import { PrismaClient, ProductStatus } from '../generated/client';
 import { randomBytes, scryptSync } from 'node:crypto';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+// If .env exists in repo root (e.g. during local dev), load it into process.env.
+// In CI environments where .env is not present, environment variables are already set.
+const envPath = resolve(__dirname, '../../../.env');
+if (existsSync(envPath) && typeof process.loadEnvFile === 'function') {
+  process.loadEnvFile(envPath);
+}
 
 const prisma = new PrismaClient();
 
