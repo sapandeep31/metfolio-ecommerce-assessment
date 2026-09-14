@@ -47,7 +47,7 @@ Because both transactions acquire locks in identical global order, cyclic wait c
 Abandoned carts hold reservations for a 15-minute TTL. To guarantee release without depending solely on an application container's health:
 
 - **Primary (In-Database `pg_cron`):** PostgreSQL runs `sweep_expired_reservations()` every minute directly within the database engine, releasing expired holds and restoring availability.
-- **Secondary (NestJS Worker):** A backup periodic sweeper runs in the API container with timeout guards and structured failure logging.
+- **Secondary (NestJS request path):** A bounded lazy sweep runs before checkout with timeout guards and structured failure logging. There is no continuously running worker in the free/serverless deployment.
 
 ---
 
@@ -99,7 +99,7 @@ Payment providers guarantee at-least-once delivery, which guarantees duplicate, 
 
 ## 3. Row-Level Security (RLS) Architecture & Edge Cases
 
-PostgreSQL Row-Level Security (RLS) is enabled on all 11 tables (`products`, `categories`, `product_variants`, `product_images`, `orders`, `order_items`, `stock_ledger`, `payments`, `profiles`, `webhook_events`, `users`), providing defense-in-depth even if application authorization logic fails.
+PostgreSQL Row-Level Security (RLS) is enabled on all application tables, including the order status history table, providing defense-in-depth for Supabase Auth clients even if application authorization logic fails.
 
 ### 3.1 Role Hierarchy & Permissions
 
@@ -113,6 +113,12 @@ PostgreSQL Row-Level Security (RLS) is enabled on all 11 tables (`products`, `ca
   - No access to `stock_ledger`, `webhook_events`, or other customers' orders.
 - **`admin`:**
   - Full SELECT, INSERT, UPDATE, DELETE across all tables.
+
+The browser never receives a service-role key or database credential. The normal
+storefront path is server-only and repeats role checks in API controllers. The
+RLS policies protect direct Supabase Auth access; the local/demo Auth.js path
+uses the same server-side role boundary rather than pretending its custom JWT is
+a Supabase JWT.
 
 ### 3.2 Key RLS Policy Challenges & Solutions
 

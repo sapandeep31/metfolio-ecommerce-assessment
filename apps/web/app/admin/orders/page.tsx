@@ -20,10 +20,14 @@ export default async function AdminOrdersPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { status } = await searchParams;
+  const { status, q } = await searchParams;
   const filter = typeof status === 'string' ? status : undefined;
+  const search = typeof q === 'string' ? q : '';
+  const query = new URLSearchParams({ perPage: '100' });
+  if (filter) query.set('status', filter);
+  if (search) query.set('q', search);
   const orders = await apiFetch<OrderList>(
-    `/admin/orders?perPage=100${filter ? `&status=${encodeURIComponent(filter)}` : ''}`,
+    `/admin/orders?${query.toString()}`,
   );
 
   return (
@@ -41,6 +45,29 @@ export default async function AdminOrdersPage({
           ))}
         </div>
       </div>
+
+      <form method="get" className="row" style={{ margin: '20px 0' }}>
+        {filter && <input type="hidden" name="status" value={filter} />}
+        <label htmlFor="order-search" className="sr-only">
+          Search order number or customer email
+        </label>
+        <input
+          id="order-search"
+          name="q"
+          type="search"
+          placeholder="Search order number or customer email"
+          defaultValue={search}
+          style={{ maxWidth: 360 }}
+        />
+        <button type="submit" className="btn btn-primary">
+          Search
+        </button>
+        {search && (
+          <Link href={filter ? `/admin/orders?status=${filter}` : '/admin/orders'} className="btn">
+            Clear
+          </Link>
+        )}
+      </form>
 
       {orders.items.length === 0 ? (
         <p className="empty">No orders</p>

@@ -309,6 +309,14 @@ export const orderItemSchema = z.object({
 });
 export type OrderItem = z.infer<typeof orderItemSchema>;
 
+export const orderStatusHistorySchema = z.object({
+  from: orderStatusSchema.nullable(),
+  to: orderStatusSchema,
+  reason: z.string(),
+  createdAt: z.string().datetime(),
+});
+export type OrderStatusHistory = z.infer<typeof orderStatusHistorySchema>;
+
 export const orderSchema = z.object({
   id: idSchema,
   number: z.string(),
@@ -320,6 +328,7 @@ export const orderSchema = z.object({
   taxCents: centsSchema,
   totalCents: centsSchema,
   items: z.array(orderItemSchema),
+  statusHistory: z.array(orderStatusHistorySchema),
   shippingAddress: addressSchema,
   reservationExpiresAt: z.string().datetime().nullable(),
   paidAt: z.string().datetime().nullable(),
@@ -330,6 +339,7 @@ export type Order = z.infer<typeof orderSchema>;
 
 export const orderListQuerySchema = z.object({
   status: orderStatusSchema.optional(),
+  q: z.string().trim().max(120).optional(),
   email: z.string().email().max(254).optional(),
   page: z.coerce.number().int().min(1).max(1_000).default(1),
   perPage: z.coerce.number().int().min(1).max(100).default(20),

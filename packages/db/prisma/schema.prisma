@@ -194,11 +194,27 @@ model Order {
   items    OrderItem[]
   payments Payment[]
   ledger   StockLedger[]
+  statusHistory OrderStatusHistory[]
 
   @@index([userId, createdAt])
   @@index([status, reservationExpiresAt])
   @@index([email])
   @@map("orders")
+}
+
+model OrderStatusHistory {
+  id        String      @id @default(cuid())
+  orderId   String      @map("order_id")
+  fromStatus OrderStatus? @map("from_status")
+  toStatus  OrderStatus  @map("to_status")
+  reason    String       @default("")
+  actorId   String?      @map("actor_id")
+  createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, createdAt])
+  @@map("order_status_history")
 }
 
 /// Product title, variant name, SKU and unit price are snapshotted so an order

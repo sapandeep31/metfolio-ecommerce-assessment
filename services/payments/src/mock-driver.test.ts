@@ -114,9 +114,9 @@ describe('parseMockEvent', () => {
     expect(parsed.isPaymentComplete).toBe(false);
   });
 
-  it('does not treat a succeeded intent as completion, matching the Stripe driver', () => {
+  it('maps a succeeded intent to payment complete, matching the Stripe driver', () => {
     const parsed = parseMockEvent(event({ type: 'payment_intent.succeeded' }));
-    expect(parsed.isPaymentComplete).toBe(false);
+    expect(parsed.isPaymentComplete).toBe(true);
     expect(parsed.isPaymentFailed).toBe(false);
   });
 

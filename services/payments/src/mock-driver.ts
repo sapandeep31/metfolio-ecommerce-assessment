@@ -68,7 +68,8 @@ export function parseMockEvent(event: MockEvent): ParsedWebhook {
     paymentIntentId: event.data.paymentIntentId,
     amountCents: event.data.amountCents,
     currency: event.data.currency,
-    isPaymentComplete: event.type === 'checkout.session.completed',
+    isPaymentComplete:
+      event.type === 'checkout.session.completed' || event.type === 'payment_intent.succeeded',
     isPaymentFailed: event.type === 'payment_intent.payment_failed',
     isSessionExpired: event.type === 'checkout.session.expired',
     isRefunded: event.type === 'charge.refunded',

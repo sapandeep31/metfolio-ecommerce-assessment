@@ -76,17 +76,15 @@ export function parseStripeEvent(event: Stripe.Event): ParsedWebhook {
 
   if (event.type === 'payment_intent.succeeded') {
     const intent = event.data.object as Stripe.PaymentIntent;
-    // Deliberately NOT treated as payment completion. For Checkout Sessions the
-    // authoritative event is checkout.session.completed; payment_intent.succeeded
-    // can arrive first and carries no session id, so acting on it would race the
-    // session bookkeeping for no benefit. It is normalized so the handler can log
-    // and acknowledge it rather than 500 on an unknown type.
+    // PaymentIntent metadata carries the order id, so this event can complete an
+    // order even when it arrives before checkout.session.completed.
     return {
       ...base,
       orderId: intent.metadata?.orderId ?? undefined,
       paymentIntentId: intent.id,
       amountCents: intent.amount ?? undefined,
       currency: intent.currency ?? undefined,
+      isPaymentComplete: true,
     };
   }
 

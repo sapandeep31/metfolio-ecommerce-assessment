@@ -260,14 +260,27 @@ export class WebhooksService {
       data: { status: 'FAILED', paymentIntentId: event.paymentIntentId ?? null },
     });
 
-    // The order is deliberately left PENDING. A failed card is a retryable
-    // situation for the customer, and cancelling it here would drop the
-    // reservation they may be about to pay for. The TTL handles the rest.
+    const cancelled = await tx.$executeRaw`
+      UPDATE "orders"
+         SET "status" = 'CANCELLED'::"OrderStatus",
+             "closed_at" = NOW(),
+             "updated_at" = NOW()
+       WHERE "id" = ${order.id}
+         AND "status" = 'PENDING'::"OrderStatus"`;
+
+    if (cancelled === 1) {
+      const items = await tx.orderItem.findMany({
+        where: { orderId: order.id },
+        select: { variantId: true, quantity: true },
+      });
+      await this.inventory.release(tx, order.id, items, 'payment-failed');
+    }
+
     return {
       handled: true,
       duplicate: false,
       retryable: false,
-      detail: `Payment failed for ${order.number}; reservation left to expire`,
+      detail: `Payment failed for ${order.number}; order cancelled and stock released`,
     };
   }
 

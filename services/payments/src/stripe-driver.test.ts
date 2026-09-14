@@ -105,9 +105,7 @@ describe('parseStripeEvent', () => {
     expect(parsed.paymentIntentId).toBe('pi_test_1');
   });
 
-  it('does not complete an order on payment_intent.succeeded', () => {
-    // The authoritative event for Checkout Sessions is the session one. Acting
-    // on the intent would race the session bookkeeping and gains nothing.
+  it('maps payment_intent.succeeded to payment complete', () => {
     const parsed = parseStripeEvent(
       stripeEvent('payment_intent.succeeded', {
         id: 'pi_test_1',
@@ -116,7 +114,7 @@ describe('parseStripeEvent', () => {
         metadata: { orderId: 'order_1' },
       }),
     );
-    expect(parsed.isPaymentComplete).toBe(false);
+    expect(parsed.isPaymentComplete).toBe(true);
     expect(parsed.orderId).toBe('order_1');
   });
 

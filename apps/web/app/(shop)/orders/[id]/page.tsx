@@ -138,6 +138,18 @@ export default async function OrderPage({
         </p>
       </div>
 
+      <section style={{ marginTop: 32 }} aria-labelledby="status-history-title">
+        <h2 id="status-history-title">Status history</h2>
+        <ol>
+          {order.statusHistory.map((entry) => (
+            <li key={`${entry.createdAt}-${entry.to}`}>
+              <strong>{entry.to}</strong> <span className="muted">{entry.reason}</span>{' '}
+              <time dateTime={entry.createdAt}>{new Date(entry.createdAt).toLocaleString()}</time>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       <div className="row" style={{ marginTop: 24 }}>
         <Link href="/products" className="btn">
           Keep shopping

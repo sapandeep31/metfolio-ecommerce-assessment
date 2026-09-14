@@ -144,9 +144,7 @@ describe('out-of-order and unknown events', () => {
     expect(await prisma.webhookEvent.count({ where: { eventId: orphan.id } })).toBe(0);
   });
 
-  it('acknowledges payment_intent.succeeded without paying the order', async () => {
-    // For Checkout Sessions the session event is authoritative. Acting on the
-    // intent would race the session bookkeeping for no benefit.
+  it('pays the order from payment_intent.succeeded', async () => {
     const order = (await placeOrder(3, 1)) as CheckoutResponse & { variantId: string };
     const results = await deliverWebhook(
       paymentEvent(order, { type: 'payment_intent.succeeded' }),
@@ -154,11 +152,11 @@ describe('out-of-order and unknown events', () => {
     );
 
     expect(results[0]!.status).toBe(200);
-    expect(results[0]!.detail).toContain('No action');
+    expect(results[0]!.detail).toContain('paid');
 
     const row = await prisma.order.findUniqueOrThrow({ where: { id: order.orderId } });
-    expect(row.status).toBe('PENDING');
-    expect((await stockOf(order.variantId)).reserved).toBe(1);
+    expect(row.status).toBe('PAID');
+    expect((await stockOf(order.variantId)).reserved).toBe(0);
   });
 
   it('resolves the order from the session id when metadata carries none', async () => {
@@ -193,7 +191,7 @@ describe('out-of-order and unknown events', () => {
     );
   });
 
-  it('leaves the order PENDING on a failed payment so the customer can retry', async () => {
+  it('cancels the order and releases stock on a failed payment', async () => {
     const order = (await placeOrder(3, 1)) as CheckoutResponse & { variantId: string };
     const results = await deliverWebhook(
       paymentEvent(order, { type: 'payment_intent.payment_failed' }),
@@ -202,10 +200,8 @@ describe('out-of-order and unknown events', () => {
 
     expect(results[0]!.status).toBe(200);
     const row = await prisma.order.findUniqueOrThrow({ where: { id: order.orderId } });
-    expect(row.status).toBe('PENDING');
-    // The reservation stays: cancelling it would drop the stock the customer is
-    // about to pay for with another card. The TTL handles it if they do not.
-    expect((await stockOf(order.variantId)).reserved).toBe(1);
+    expect(row.status).toBe('CANCELLED');
+    expect((await stockOf(order.variantId)).reserved).toBe(0);
 
     const payment = await prisma.payment.findFirstOrThrow({ where: { orderId: order.orderId } });
     expect(payment.status).toBe('FAILED');

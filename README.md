@@ -34,7 +34,7 @@ flowchart LR
     API --> SMTP[Email Notifications]
 ```
 
-- **`apps/web` (Next.js 14)**: Editorial storefront with Incremental Static Regeneration (ISR), scrollytelling animations, and dedicated low-latency Admin Console.
+- **`apps/web` (Next.js 14)**: Editorial storefront with Incremental Static Regeneration (ISR), an image-led hero, and a dedicated Admin Console.
 - **`apps/api` (NestJS 10)**: Order management system, reservation lifecycle, lexicographically sorted row-level locks, and webhook idempotency engine.
 - **`packages/db` (Prisma + PostgreSQL)**: Database schema, append-only immutable stock ledger, and PostgreSQL CHECK constraints.
 - **`packages/shared` (Zod + Domain Logic)**: Shared Zod contracts, strict integer-cent pricing math, and pure stock predicate calculations.
@@ -49,7 +49,7 @@ flowchart LR
 - **Atomic Conditional Updates**: `UPDATE "product_variants" SET "stock_reserved" = "stock_reserved" + $qty WHERE "id" = $id AND "stock_on_hand" - "stock_reserved" >= $qty`. Eliminates the read-modify-write race window.
 - **Deadlock-Free Locking**: Variant IDs are always acquired in deterministic sorted order.
 - **Append-Only Stock Ledger**: Every movement (`RESERVE`, `RELEASE`, `FULFILL`, `RESTOCK`, `ADJUST`) is logged with signed deltas. Replaying the ledger from zero reconstructs the exact inventory count.
-- **Self-Cleaning Reservations**: Unpaid cart reservations expire automatically after 15 minutes, reclaimed by lazy checks on checkout and background database sweeps.
+- **Self-Cleaning Reservations**: Unpaid cart reservations expire automatically, reclaimed by lazy checks on checkout and a database function scheduled where `pg_cron` is available.
 
 ### 2. Idempotent Payment Webhooks
 
@@ -265,6 +265,25 @@ node scripts/env-contract.mjs
 # 5. End-to-End Test Suite (Playwright)
 ./scripts/e2e.sh
 ```
+
+## Assessment Coverage
+
+The implementation covers the required storefront, cart, server-priced Stripe
+checkout, verified webhook confirmation, atomic stock reservation, admin CRUD,
+refunds, and customer order access. Stock movements are append-only and orders
+include a persistent status history. Admin order search accepts an order number
+or customer email.
+
+The API uses Prisma over the Supabase PostgreSQL database and keeps privileged
+database access on the server. Supabase Auth and the RLS migration are included
+for deployments that use Supabase Auth directly; the local/demo credential path
+uses Auth.js credentials backed by the API's server-side role guard. The default
+Render deployment uses local storage, which is ephemeral; use the S3-compatible
+storage driver for durable production media.
+
+Password reset is implemented through Supabase Auth when Supabase is configured.
+The local/demo Auth.js credential path has no email delivery provider, so it
+returns a generic response rather than claiming a reset email was sent.
 
 ---
 

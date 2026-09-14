@@ -8,7 +8,10 @@ import { InventoryService } from '../inventory/inventory.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { verifyOrderAccessToken } from './order-access-token';
 
-const ORDER_INCLUDE = { items: true } satisfies Prisma.OrderInclude;
+const ORDER_INCLUDE = {
+  items: true,
+  statusHistory: { orderBy: { createdAt: 'asc' as const } },
+} satisfies Prisma.OrderInclude;
 type OrderRow = Prisma.OrderGetPayload<{ include: typeof ORDER_INCLUDE }>;
 
 @Injectable()
@@ -75,6 +78,14 @@ export class OrdersService {
     const where: Prisma.OrderWhereInput = {
       ...(query.status ? { status: query.status } : {}),
       ...(query.email ? { email: query.email.toLowerCase() } : {}),
+      ...(query.q
+        ? {
+            OR: [
+              { number: { contains: query.q, mode: 'insensitive' } },
+              { email: { contains: query.q.toLowerCase(), mode: 'insensitive' } },
+            ],
+          }
+        : {}),
     };
     return this.paginate(where, query);
   }
@@ -214,6 +225,12 @@ export class OrdersService {
         unitPriceCents: item.unitPriceCents,
         quantity: item.quantity,
         lineTotalCents: item.lineTotalCents,
+      })),
+      statusHistory: row.statusHistory.map((entry) => ({
+        from: entry.fromStatus,
+        to: entry.toStatus,
+        reason: entry.reason,
+        createdAt: entry.createdAt.toISOString(),
       })),
       shippingAddress: {
         name: row.shippingName,
