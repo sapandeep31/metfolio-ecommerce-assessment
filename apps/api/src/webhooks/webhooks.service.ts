@@ -82,47 +82,49 @@ export class WebhooksService {
     // Annotated rather than inferred: the two return sites produce narrower
     // object literals, and their union would drop the optional
     // `sendConfirmationFor` that the post-commit dispatch below reads.
-    const outcome: WebhookOutcome = await this.prisma.$transaction(async (tx) => {
-      const inserted = await tx.$executeRaw`
+    const outcome: WebhookOutcome = await this.prisma
+      .$transaction(async (tx) => {
+        const inserted = await tx.$executeRaw`
         INSERT INTO "webhook_events" ("provider", "event_id", "type", "payload", "order_id", "received_at")
         VALUES (${provider}, ${event.eventId}, ${event.type},
                 ${JSON.stringify(event)}::jsonb, ${event.orderId ?? null}, NOW())
         ON CONFLICT ("provider", "event_id") DO NOTHING`;
 
-      if (inserted === 0) {
-        return {
-          handled: true,
-          duplicate: true,
-          retryable: false,
-          detail: 'Duplicate delivery ignored',
-        } satisfies WebhookOutcome;
-      }
+        if (inserted === 0) {
+          return {
+            handled: true,
+            duplicate: true,
+            retryable: false,
+            detail: 'Duplicate delivery ignored',
+          } satisfies WebhookOutcome;
+        }
 
-      const result = await this.process(tx, event);
+        const result = await this.process(tx, event);
 
-      if (result.retryable) {
-        // Roll the dedupe row back so the provider's retry is reprocessed rather
-        // than silently swallowed as a duplicate.
-        throw new RetryableWebhookError(result.detail);
-      }
+        if (result.retryable) {
+          // Roll the dedupe row back so the provider's retry is reprocessed rather
+          // than silently swallowed as a duplicate.
+          throw new RetryableWebhookError(result.detail);
+        }
 
-      await tx.webhookEvent.update({
-        where: { provider_eventId: { provider, eventId: event.eventId } },
-        data: { processedAt: new Date() },
+        await tx.webhookEvent.update({
+          where: { provider_eventId: { provider, eventId: event.eventId } },
+          data: { processedAt: new Date() },
+        });
+
+        return result;
+      })
+      .catch((error: unknown) => {
+        if (error instanceof RetryableWebhookError) {
+          return {
+            handled: false,
+            duplicate: false,
+            retryable: true,
+            detail: error.message,
+          } satisfies WebhookOutcome;
+        }
+        throw error;
       });
-
-      return result;
-    }).catch((error: unknown) => {
-      if (error instanceof RetryableWebhookError) {
-        return {
-          handled: false,
-          duplicate: false,
-          retryable: true,
-          detail: error.message,
-        } satisfies WebhookOutcome;
-      }
-      throw error;
-    });
 
     if (outcome.handled && !outcome.duplicate) {
       this.logger.log(`Processed ${provider} ${event.type} ${event.eventId}: ${outcome.detail}`);
@@ -321,7 +323,11 @@ export class WebhooksService {
   private async resolveOrder(
     tx: Prisma.TransactionClient,
     event: ParsedWebhook,
-  ): Promise<{ id: string; number: string; status: 'PENDING' | 'PAID' | 'FULFILLED' | 'CANCELLED' | 'EXPIRED' } | null> {
+  ): Promise<{
+    id: string;
+    number: string;
+    status: 'PENDING' | 'PAID' | 'FULFILLED' | 'CANCELLED' | 'EXPIRED';
+  } | null> {
     if (event.orderId) {
       const order = await tx.order.findUnique({
         where: { id: event.orderId },

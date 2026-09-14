@@ -1,36 +1,62 @@
 'use server';
 
 import { signupSchema } from '@shop/shared';
-import { AuthError } from 'next-auth';
 import { redirect } from 'next/navigation';
-import { signIn } from '../auth';
-import { API_BASE_URL } from '../lib/config';
+import { createClient } from '../lib/supabase/server';
 
 export interface AuthState {
   error?: string;
+  success?: string;
 }
 
 /** Minimum seconds a human takes to fill the signup form. Bots submit instantly. */
 const MIN_FILL_SECONDS = 2;
 
-export async function loginAction(_state: AuthState | undefined, formData: FormData): Promise<AuthState> {
+export async function loginAction(
+  _state: AuthState | undefined,
+  formData: FormData,
+): Promise<AuthState> {
   const next = String(formData.get('next') ?? '/');
-  try {
-    await signIn('credentials', {
-      email: String(formData.get('email') ?? ''),
-      password: String(formData.get('password') ?? ''),
-      redirect: false,
-    });
-  } catch (error) {
-    if (error instanceof AuthError) return { error: 'Invalid email or password.' };
-    throw error;
+  const email = String(formData.get('email') ?? '').trim();
+  const password = String(formData.get('password') ?? '');
+
+  if (!email || !password) {
+    return { error: 'Please provide both email and password.' };
   }
-  // Outside the try: redirect() signals by throwing, and catching it here would
-  // leave the user on a form that appeared to do nothing.
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    return { error: error.message || 'Invalid email or password.' };
+  }
+
+  // If user is trying to access /admin, verify admin role
+  if (next.startsWith('/admin')) {
+    let role = data.user?.app_metadata?.role;
+    if (!role && data.user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single();
+      role = profile?.role;
+    }
+    if (role !== 'admin') {
+      return { error: 'Access denied. You do not have administrator privileges.' };
+    }
+  }
+
   redirect(next.startsWith('/') ? next : '/');
 }
 
-export async function signupAction(_state: AuthState | undefined, formData: FormData): Promise<AuthState> {
+export async function signupAction(
+  _state: AuthState | undefined,
+  formData: FormData,
+): Promise<AuthState> {
   // Honeypot: a field hidden from humans and irresistible to naive bots.
   if (String(formData.get('company') ?? '') !== '') return { error: 'Signup failed.' };
   const renderedAt = Number(formData.get('_ts') ?? 0);
@@ -39,35 +65,55 @@ export async function signupAction(_state: AuthState | undefined, formData: Form
   }
 
   const parsed = signupSchema.safeParse({
-    email: String(formData.get('email') ?? ''),
+    email: String(formData.get('email') ?? '').trim(),
     password: String(formData.get('password') ?? ''),
-    name: String(formData.get('name') ?? ''),
+    name: String(formData.get('name') ?? '').trim(),
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? 'Please check the form.' };
   }
 
-  const response = await fetch(`${API_BASE_URL}/auth/signup`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(parsed.data),
-    cache: 'no-store',
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signUp({
+    email: parsed.data.email,
+    password: parsed.data.password,
+    options: {
+      data: {
+        display_name: parsed.data.name,
+        name: parsed.data.name,
+      },
+    },
   });
-  if (!response.ok) {
-    const body = (await response.json().catch(() => ({}))) as { message?: string };
-    return { error: body.message ?? 'Could not create that account.' };
+
+  if (error) {
+    return { error: error.message || 'Could not create account.' };
   }
 
-  try {
-    await signIn('credentials', {
-      email: parsed.data.email,
-      password: parsed.data.password,
-      redirect: false,
-    });
-  } catch {
-    // The account exists; only the auto sign-in failed. Sending them to the
-    // login page is better than reporting a failure that did not happen.
-    redirect('/login');
+  // If session is immediately established (auto-confirm enabled)
+  if (data.session) {
+    redirect('/');
   }
-  redirect('/');
+
+  return { success: 'Account created! Please check your email to confirm or sign in.' };
+}
+
+export async function signoutAction(): Promise<void> {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect('/login');
+}
+
+export async function resetPasswordAction(
+  _state: AuthState | undefined,
+  formData: FormData,
+): Promise<AuthState> {
+  const email = String(formData.get('email') ?? '').trim();
+  if (!email) return { error: 'Please enter your email address.' };
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email);
+  if (error) {
+    return { error: error.message };
+  }
+  return { success: 'Password reset link sent! Check your email inbox.' };
 }

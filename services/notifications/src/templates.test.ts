@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  escapeHtml,
-  renderOrderEmail,
-  sanitizeSubject,
-  type OrderEmailData,
-} from './templates';
+import { escapeHtml, renderOrderEmail, sanitizeSubject, type OrderEmailData } from './templates';
 
 const data: OrderEmailData = {
   orderNumber: 'SHOP-1001',
@@ -24,9 +19,7 @@ const data: OrderEmailData = {
 
 describe('escapeHtml', () => {
   it('escapes every dangerous character', () => {
-    expect(escapeHtml(`<script>alert("x")&'`)).toBe(
-      '&lt;script&gt;alert(&quot;x&quot;)&amp;&#39;',
-    );
+    expect(escapeHtml(`<script>alert("x")&'`)).toBe('&lt;script&gt;alert(&quot;x&quot;)&amp;&#39;');
   });
 
   it('leaves plain text untouched', () => {

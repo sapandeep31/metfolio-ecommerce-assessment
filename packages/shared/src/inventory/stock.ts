@@ -54,9 +54,7 @@ export function canReserve(level: StockLevel, quantity: number): boolean {
 /** Reserve: hold stock for a PENDING order. On-hand is untouched. */
 export function applyReserve(level: StockLevel, quantity: number): StockLevel {
   if (!canReserve(level, quantity)) {
-    throw new RangeError(
-      `cannot reserve ${quantity}: only ${availableStock(level)} available`,
-    );
+    throw new RangeError(`cannot reserve ${quantity}: only ${availableStock(level)} available`);
   }
   return { stockOnHand: level.stockOnHand, stockReserved: level.stockReserved + quantity };
 }
@@ -70,9 +68,7 @@ export function canRelease(level: StockLevel, quantity: number): boolean {
 /** Release: an order expired or was cancelled. The goods go back on the shelf. */
 export function applyRelease(level: StockLevel, quantity: number): StockLevel {
   if (!canRelease(level, quantity)) {
-    throw new RangeError(
-      `cannot release ${quantity}: only ${level.stockReserved} reserved`,
-    );
+    throw new RangeError(`cannot release ${quantity}: only ${level.stockReserved} reserved`);
   }
   return { stockOnHand: level.stockOnHand, stockReserved: level.stockReserved - quantity };
 }
@@ -122,9 +118,7 @@ export function canAdjust(level: StockLevel, delta: number): boolean {
 
 export function applyAdjust(level: StockLevel, delta: number): StockLevel {
   if (!canAdjust(level, delta)) {
-    throw new RangeError(
-      `cannot adjust by ${delta}: would violate 0 <= reserved <= on hand`,
-    );
+    throw new RangeError(`cannot adjust by ${delta}: would violate 0 <= reserved <= on hand`);
   }
   return { stockOnHand: level.stockOnHand + delta, stockReserved: level.stockReserved };
 }

@@ -75,12 +75,7 @@ export class CartService {
       await this.redis.client.del(this.key(cartId));
       return;
     }
-    await this.redis.client.set(
-      this.key(cartId),
-      JSON.stringify(lines),
-      'EX',
-      CART_TTL_SECONDS,
-    );
+    await this.redis.client.set(this.key(cartId), JSON.stringify(lines), 'EX', CART_TTL_SECONDS);
   }
 
   /** Resolve the stored ids into a fully priced cart. */

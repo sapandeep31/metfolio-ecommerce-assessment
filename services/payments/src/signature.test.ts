@@ -10,7 +10,9 @@ const BODY = JSON.stringify({ id: 'evt_1', type: 'checkout.session.completed' })
 describe('signPayload / verifySignature', () => {
   it('accepts a signature it just produced', () => {
     const header = signPayload(BODY, SECRET, NOW);
-    expect(() => verifySignature(BODY, header, SECRET, DEFAULT_TOLERANCE_SECONDS, NOW)).not.toThrow();
+    expect(() =>
+      verifySignature(BODY, header, SECRET, DEFAULT_TOLERANCE_SECONDS, NOW),
+    ).not.toThrow();
   });
 
   it('emits the documented header format', () => {
@@ -35,7 +37,13 @@ describe('signPayload / verifySignature', () => {
   it('rejects the wrong secret', () => {
     const header = signPayload(BODY, SECRET, NOW);
     expect(() =>
-      verifySignature(BODY, header, 'fixture-value-different-key-000000000', DEFAULT_TOLERANCE_SECONDS, NOW),
+      verifySignature(
+        BODY,
+        header,
+        'fixture-value-different-key-000000000',
+        DEFAULT_TOLERANCE_SECONDS,
+        NOW,
+      ),
     ).toThrow(WebhookSignatureError);
   });
 
@@ -50,7 +58,9 @@ describe('signPayload / verifySignature', () => {
   it('accepts a replay exactly on the tolerance boundary', () => {
     const header = signPayload(BODY, SECRET, NOW);
     const edge = NOW + DEFAULT_TOLERANCE_SECONDS;
-    expect(() => verifySignature(BODY, header, SECRET, DEFAULT_TOLERANCE_SECONDS, edge)).not.toThrow();
+    expect(() =>
+      verifySignature(BODY, header, SECRET, DEFAULT_TOLERANCE_SECONDS, edge),
+    ).not.toThrow();
   });
 
   it('rejects a timestamp too far in the future', () => {
@@ -86,7 +96,9 @@ describe('signPayload / verifySignature', () => {
   it('accepts when any one of several v1 values matches, for secret rotation', () => {
     const good = signPayload(BODY, SECRET, NOW).split('v1=')[1];
     const header = `t=${NOW},v1=${'0'.repeat(64)},v1=${good}`;
-    expect(() => verifySignature(BODY, header, SECRET, DEFAULT_TOLERANCE_SECONDS, NOW)).not.toThrow();
+    expect(() =>
+      verifySignature(BODY, header, SECRET, DEFAULT_TOLERANCE_SECONDS, NOW),
+    ).not.toThrow();
   });
 
   it('rejects a MAC of the wrong length without throwing from timingSafeEqual', () => {

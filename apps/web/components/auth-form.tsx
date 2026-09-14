@@ -71,7 +71,14 @@ export function AuthForm({
             </>
           )}
           <label htmlFor="email">Email</label>
-          <input id="email" name="email" type="email" required autoComplete="email" data-testid="email" />
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            autoComplete="email"
+            data-testid="email"
+          />
           <label htmlFor="password">Password</label>
           <input
             id="password"
@@ -89,6 +96,15 @@ export function AuthForm({
           {state?.error && (
             <p className="error" role="alert" data-testid="auth-error">
               {state.error}
+            </p>
+          )}
+          {state?.success && (
+            <p
+              className="notice"
+              role="status"
+              style={{ color: '#10b981', marginTop: 12, textAlign: 'center' }}
+            >
+              {state.success}
             </p>
           )}
         </form>

@@ -9,7 +9,6 @@ import { PaymentsConfigError, WebhookSignatureError, type CheckoutParams } from 
  * the mapping was split out from `verifyWebhook` in the first place.
  */
 
- 
 const stripeEvent = (type: string, object: any): Stripe.Event =>
   ({ id: 'evt_test_1', type, data: { object } }) as unknown as Stripe.Event;
 
@@ -154,7 +153,10 @@ describe('createStripeGateway', () => {
     });
     const constructEvent = vi.fn();
     return {
-      client: { checkout: { sessions: { create } }, webhooks: { constructEvent } } as unknown as Stripe,
+      client: {
+        checkout: { sessions: { create } },
+        webhooks: { constructEvent },
+      } as unknown as Stripe,
       create,
       constructEvent,
     };

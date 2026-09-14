@@ -11,8 +11,8 @@ export default async function AdminStockPage() {
     <>
       <h1>Stock</h1>
       <p className="muted">
-        On hand is physical inventory. Reserved is the part of it promised to open orders.
-        Available is what a new order can still claim. Every change here writes a ledger row.
+        On hand is physical inventory. Reserved is the part of it promised to open orders. Available
+        is what a new order can still claim. Every change here writes a ledger row.
       </p>
       <table>
         <thead>

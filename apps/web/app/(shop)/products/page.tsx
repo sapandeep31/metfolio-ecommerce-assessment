@@ -19,7 +19,10 @@ function first(value: string | string[] | undefined): string | undefined {
  * href is a reflected-injection hole, and it also means a typo in a URL produces
  * a 500 instead of a sensible page.
  */
-function buildQuery(params: Record<string, string | number | undefined>, overrides: Record<string, string | undefined>): string {
+function buildQuery(
+  params: Record<string, string | number | undefined>,
+  overrides: Record<string, string | undefined>,
+): string {
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries({ ...params, ...overrides })) {
     if (value !== undefined && value !== '' && value !== null) search.set(key, String(value));
@@ -57,7 +60,12 @@ export default async function ProductsPage({
     publicApiFetch<Category[]>('/categories'),
   ]);
 
-  const base = { q: query.q, category: query.category, sort: query.sort, inStock: query.inStock ? 'true' : undefined };
+  const base = {
+    q: query.q,
+    category: query.category,
+    sort: query.sort,
+    inStock: query.inStock ? 'true' : undefined,
+  };
 
   return (
     <main className="container-wide">
@@ -90,14 +98,21 @@ export default async function ProductsPage({
               />
               <span>In stock only</span>
             </label>
-            <button type="submit" className="btn btn-primary" style={{ marginTop: 16, width: '100%' }}>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              style={{ marginTop: 16, width: '100%' }}
+            >
               Apply
             </button>
           </form>
 
           <label>Categories</label>
           <div className="filter-links">
-            <Link href={`/products?${buildQuery(base, { category: undefined })}`} className={!query.category ? 'active' : ''}>
+            <Link
+              href={`/products?${buildQuery(base, { category: undefined })}`}
+              className={!query.category ? 'active' : ''}
+            >
               All
             </Link>
             {categories.map((category) => (

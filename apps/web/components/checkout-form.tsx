@@ -90,7 +90,8 @@ export function CheckoutForm({ defaultEmail }: { defaultEmail: string }) {
         <ul className="error" data-testid="stock-details">
           {details.map((detail) => (
             <li key={detail.variantId}>
-              {detail.productTitle} ({detail.variantName}): asked for {detail.requested}, {detail.available} left
+              {detail.productTitle} ({detail.variantName}): asked for {detail.requested},{' '}
+              {detail.available} left
             </li>
           ))}
         </ul>

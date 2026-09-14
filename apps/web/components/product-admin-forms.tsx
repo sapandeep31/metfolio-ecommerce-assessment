@@ -26,9 +26,20 @@ export function CreateProductForm({ categories }: { categories: Category[] }) {
       <label htmlFor="title">Title</label>
       <input id="title" name="title" required data-testid="product-title-input" />
       <label htmlFor="slug">Slug (kebab-case)</label>
-      <input id="slug" name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" data-testid="product-slug-input" />
+      <input
+        id="slug"
+        name="slug"
+        required
+        pattern="[a-z0-9]+(-[a-z0-9]+)*"
+        data-testid="product-slug-input"
+      />
       <label htmlFor="description">Description</label>
-      <textarea id="description" name="description" rows={3} data-testid="product-description-input" />
+      <textarea
+        id="description"
+        name="description"
+        rows={3}
+        data-testid="product-description-input"
+      />
       <label htmlFor="categoryId">Category</label>
       <select id="categoryId" name="categoryId" defaultValue="">
         <option value="">None</option>
@@ -45,7 +56,13 @@ export function CreateProductForm({ categories }: { categories: Category[] }) {
         <option value="DRAFT">Draft</option>
         <option value="ACTIVE">Active</option>
       </select>
-      <button type="submit" className="btn btn-primary" style={{ marginTop: 16 }} disabled={pending} data-testid="create-product">
+      <button
+        type="submit"
+        className="btn btn-primary"
+        style={{ marginTop: 16 }}
+        disabled={pending}
+        data-testid="create-product"
+      >
         {pending ? 'Creating…' : 'Create product'}
       </button>
       {error && (
@@ -76,16 +93,42 @@ export function CreateVariantForm({ product }: { product: Product }) {
     >
       <h3>Add a variant to {product.title}</h3>
       <label htmlFor={`sku-${product.id}`}>SKU</label>
-      <input id={`sku-${product.id}`} name="sku" required style={{ textTransform: 'uppercase' }} data-testid="variant-sku-input" />
+      <input
+        id={`sku-${product.id}`}
+        name="sku"
+        required
+        style={{ textTransform: 'uppercase' }}
+        data-testid="variant-sku-input"
+      />
       <label htmlFor={`name-${product.id}`}>Name</label>
       <input id={`name-${product.id}`} name="name" required data-testid="variant-name-input" />
       <label htmlFor={`price-${product.id}`}>Price (cents)</label>
       {/* Cents, not dollars, all the way to the input. Converting in the browser
           is where a float sneaks into money. */}
-      <input id={`price-${product.id}`} name="priceCents" type="number" min={0} required data-testid="variant-price-input" />
+      <input
+        id={`price-${product.id}`}
+        name="priceCents"
+        type="number"
+        min={0}
+        required
+        data-testid="variant-price-input"
+      />
       <label htmlFor={`stock-${product.id}`}>Initial stock</label>
-      <input id={`stock-${product.id}`} name="stockOnHand" type="number" min={0} defaultValue={0} data-testid="variant-stock-input" />
-      <button type="submit" className="btn btn-primary" style={{ marginTop: 16 }} disabled={pending} data-testid="create-variant">
+      <input
+        id={`stock-${product.id}`}
+        name="stockOnHand"
+        type="number"
+        min={0}
+        defaultValue={0}
+        data-testid="variant-stock-input"
+      />
+      <button
+        type="submit"
+        className="btn btn-primary"
+        style={{ marginTop: 16 }}
+        disabled={pending}
+        data-testid="create-variant"
+      >
         {pending ? 'Adding…' : 'Add variant'}
       </button>
       {error && (

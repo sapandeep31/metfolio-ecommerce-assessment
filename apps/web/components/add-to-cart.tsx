@@ -24,7 +24,13 @@ import { PUBLIC_API_BASE_URL } from '../lib/config';
  * would post twice; the API and database would both survive it, but the customer
  * would find two of something in their cart and blame the shop.
  */
-export function AddToCart({ variants: initial, slug }: { variants: ProductVariant[]; slug: string }) {
+export function AddToCart({
+  variants: initial,
+  slug,
+}: {
+  variants: ProductVariant[];
+  slug: string;
+}) {
   const [variants, setVariants] = useState(initial);
   const purchasable = initial.filter((variant) => variant.availableStock > 0);
   const [selected, setSelected] = useState(purchasable[0]?.id ?? initial[0]?.id ?? '');

@@ -37,7 +37,8 @@ export function MockCheckoutForm({
 
   function pay(approve: boolean, replay: boolean) {
     startTransition(async () => {
-      const eventId = replay && lastEventId ? lastEventId : `evt_mock_${crypto.randomUUID().replace(/-/g, '')}`;
+      const eventId =
+        replay && lastEventId ? lastEventId : `evt_mock_${crypto.randomUUID().replace(/-/g, '')}`;
       const result = await deliverMockWebhook({
         sessionId,
         orderId,

@@ -53,9 +53,9 @@ test.describe('admin', () => {
     await page.getByTestId('variant-stock-input').fill('7');
     await page.getByTestId('create-variant').click();
 
-    await expect(
-      page.locator(`[data-testid="admin-variant-row"][data-sku="${sku}"]`),
-    ).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator(`[data-testid="admin-variant-row"][data-sku="${sku}"]`)).toBeVisible({
+      timeout: 15_000,
+    });
 
     // The storefront sees it, which proves the cache invalidation ran.
     await page.goto(`/products/${slug}`);
@@ -108,10 +108,9 @@ test.describe('admin', () => {
     test.skip(reserved === 0, 'the reservation landed on the other variant');
 
     const row = page.locator(`[data-testid="stock-row"][data-sku="${sku}"]`);
-    const id = (await row.locator('[data-testid^="stock-qty-"]').getAttribute('data-testid'))!.replace(
-      'stock-qty-',
-      '',
-    );
+    const id = (await row
+      .locator('[data-testid^="stock-qty-"]')
+      .getAttribute('data-testid'))!.replace('stock-qty-', '');
     await page.getByTestId(`stock-qty-${id}`).fill(String(-onHand));
     await page.getByTestId(`stock-reason-${id}`).fill('e2e: should be refused');
     await page.getByTestId(`adjust-${id}`).click();

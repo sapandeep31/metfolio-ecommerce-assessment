@@ -30,7 +30,7 @@ describe('InventoryService.orderLines', () => {
     expect(orderA.map((line) => line.variantId)).toEqual(orderB.map((line) => line.variantId));
   });
 
-  it('does not mutate the caller\'s array', () => {
+  it("does not mutate the caller's array", () => {
     const input = [
       { variantId: 'v2', quantity: 1 },
       { variantId: 'v1', quantity: 1 },

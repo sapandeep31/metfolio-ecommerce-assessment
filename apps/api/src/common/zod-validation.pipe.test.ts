@@ -39,9 +39,7 @@ describe('ZodValidationPipe', () => {
   });
 
   it('reports every failing field, not only the first', () => {
-    const pipe = new ZodValidationPipe(
-      z.object({ a: z.string(), b: z.number(), c: z.boolean() }),
-    );
+    const pipe = new ZodValidationPipe(z.object({ a: z.string(), b: z.number(), c: z.boolean() }));
     try {
       pipe.transform({ a: 1, b: 'x', c: 'y' });
       expect.unreachable('should have thrown');

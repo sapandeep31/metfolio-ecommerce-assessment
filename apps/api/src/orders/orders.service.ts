@@ -104,10 +104,7 @@ export class OrdersService {
     return this.toOrder(row);
   }
 
-  private async paginate(
-    where: Prisma.OrderWhereInput,
-    query: OrderListQuery,
-  ): Promise<OrderList> {
+  private async paginate(where: Prisma.OrderWhereInput, query: OrderListQuery): Promise<OrderList> {
     const [rows, total] = await this.prisma.$transaction([
       this.prisma.order.findMany({
         where,

@@ -15,10 +15,10 @@ exists so those two properties have somewhere real to live.
 
 ![Demo](assets/demo.gif)
 
-*Guest purchase, recorded from the Playwright suite: browse, full-text search,
+_Guest purchase, recorded from the Playwright suite: browse, full-text search,
 cart, checkout, then the mock gateway delivering the same payment webhook
 **twenty times at once**. The order is charged once, and the stock ledger closes
-on one `RESERVE` and one `FULFILL`.*
+on one `RESERVE` and one `FULFILL`._
 
 Not deployed anywhere, deliberately: the repo is the artefact. It runs locally in
 about a minute (see [Running it](#running-it)), and the GIF above is reproducible
@@ -48,7 +48,7 @@ a state where reserved exceeds on-hand. An integration test asserts this by
 issuing a hand-written `UPDATE` in psql and watching Postgres refuse it.
 
 **Layer 2 — a conditional UPDATE, never a read-modify-write.** The availability
-test *is* the `WHERE` clause, so there is no window between checking and writing:
+test _is_ the `WHERE` clause, so there is no window between checking and writing:
 
 ```sql
 UPDATE "product_variants"
@@ -187,9 +187,9 @@ the project name from it and two stacks evict each other.
 
 Seeded logins, both with password `password123`:
 
-| Email | Role |
-|---|---|
-| `admin@shop.local` | ADMIN |
+| Email                 | Role     |
+| --------------------- | -------- |
+| `admin@shop.local`    | ADMIN    |
 | `customer@shop.local` | CUSTOMER |
 
 To run the whole thing as it ships, in containers:
@@ -212,14 +212,14 @@ on screen means more scrolling between two numbers they are trying to compare.
 
 One visual language cannot serve both, so there are two scopes sharing one set of primitives:
 
-| | Storefront (`:root`) | Console (`[data-surface="admin"]`) |
-|---|---|---|
-| Canvas | warm paper `#fffdfa` / `#14120e` | cool slate `#f6f7f9` / `#0d1117` |
-| Accent | oxblood `#7a2e2e` | blue `#1f6feb` |
-| Radius | 2px, nearly square | 4px |
-| Body | 15px | 13px, tighter rows |
-| Titles & prices | Instrument Serif | Archivo, no serif anywhere |
-| Identifiers | — | IBM Plex Mono, right-aligned |
+|                 | Storefront (`:root`)             | Console (`[data-surface="admin"]`) |
+| --------------- | -------------------------------- | ---------------------------------- |
+| Canvas          | warm paper `#fffdfa` / `#14120e` | cool slate `#f6f7f9` / `#0d1117`   |
+| Accent          | oxblood `#7a2e2e`                | blue `#1f6feb`                     |
+| Radius          | 2px, nearly square               | 4px                                |
+| Body            | 15px                             | 13px, tighter rows                 |
+| Titles & prices | Instrument Serif                 | Archivo, no serif anywhere         |
+| Identifiers     | —                                | IBM Plex Mono, right-aligned       |
 
 `apps/web/app/globals.css` holds the primitives and the storefront; `apps/web/app/admin.css` only
 overrides. Spacing rhythm, type scale, motion, focus treatment and the accessibility contract are
@@ -297,7 +297,7 @@ signing and verification, upload validation, guards, config parsing, the
 reservation sweep's control flow. Pure and fast; no database, no network.
 
 **Integration.** The two proofs, against a real Postgres, because the properties
-under test *are* Postgres properties: a conditional UPDATE's rowcount, a primary
+under test _are_ Postgres properties: a conditional UPDATE's rowcount, a primary
 key's behaviour under concurrent insert, a CHECK constraint's refusal to commit.
 Mocking the database here would test the mock's opinion of those.
 
@@ -361,14 +361,14 @@ a customer.
 
 Every variable is documented in `.env.example`. The ones that matter:
 
-| Variable | Default | Notes |
-|---|---|---|
-| `AUTH_SECRET` | — | Required, >= 16 chars. Signs sessions, service tokens and cart cookies. |
-| `PAYMENTS_DRIVER` | `mock` | `stripe` requires `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`, and fails at boot without them rather than falling back. |
-| `STORAGE_DRIVER` | `local` | `s3` requires `S3_BUCKET` and `S3_REGION`. |
-| `RESERVATION_TTL_MINUTES` | `15` | How long a checkout holds stock. |
-| `TAX_BASIS_POINTS` | `875` | 8.75%, applied to the subtotal only. |
-| `RATE_LIMIT_CHECKOUT` | `30` | Per IP per minute. The test scripts raise this; production should not. |
+| Variable                  | Default | Notes                                                                                                                       |
+| ------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `AUTH_SECRET`             | —       | Required, >= 16 chars. Signs sessions, service tokens and cart cookies.                                                     |
+| `PAYMENTS_DRIVER`         | `mock`  | `stripe` requires `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`, and fails at boot without them rather than falling back. |
+| `STORAGE_DRIVER`          | `local` | `s3` requires `S3_BUCKET` and `S3_REGION`.                                                                                  |
+| `RESERVATION_TTL_MINUTES` | `15`    | How long a checkout holds stock.                                                                                            |
+| `TAX_BASIS_POINTS`        | `875`   | 8.75%, applied to the subtotal only.                                                                                        |
+| `RATE_LIMIT_CHECKOUT`     | `30`    | Per IP per minute. The test scripts raise this; production should not.                                                      |
 
 No secret is ever committed. `gitleaks` runs as a pre-commit hook and as the
 first CI job, and a finding blocks the push.

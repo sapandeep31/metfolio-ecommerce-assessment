@@ -13,7 +13,8 @@ import { randomUUID } from 'node:crypto';
  */
 
 export const API_BASE_URL = process.env.API_BASE_URL ?? 'http://localhost:4000';
-export const MOCK_SECRET = process.env.MOCK_WEBHOOK_SECRET ?? 'mock-webhook-secret-at-least-32-chars';
+export const MOCK_SECRET =
+  process.env.MOCK_WEBHOOK_SECRET ?? 'mock-webhook-secret-at-least-32-chars';
 
 export const prisma = new PrismaClient();
 
@@ -36,7 +37,10 @@ export interface TestVariant {
  * racing the same variant would make failures depend on execution order, which
  * is precisely the class of bug this suite exists to catch.
  */
-export async function createTestVariant(stockOnHand: number, priceCents = 1_000): Promise<TestVariant> {
+export async function createTestVariant(
+  stockOnHand: number,
+  priceCents = 1_000,
+): Promise<TestVariant> {
   const suffix = randomUUID().slice(0, 8);
   const product = await prisma.product.create({
     data: {
@@ -73,7 +77,9 @@ export async function stockOf(variantId: string): Promise<{ onHand: number; rese
  * a mismatch means a write bypassed the ledger, which is how a lost update would
  * show up.
  */
-export async function ledgerTotals(variantId: string): Promise<{ onHand: number; reserved: number }> {
+export async function ledgerTotals(
+  variantId: string,
+): Promise<{ onHand: number; reserved: number }> {
   const rows = await prisma.stockLedger.findMany({
     where: { variantId },
     select: { onHandDelta: true, reservedDelta: true },
@@ -87,7 +93,11 @@ export async function ledgerTotals(variantId: string): Promise<{ onHand: number;
   );
 }
 
-export async function addToCart(cartId: string, variantId: string, quantity: number): Promise<Response> {
+export async function addToCart(
+  cartId: string,
+  variantId: string,
+  quantity: number,
+): Promise<Response> {
   return fetch(`${API_BASE_URL}/cart/lines`, {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-cart-id': cartId },
@@ -124,7 +134,10 @@ export async function checkout(
   return { status: response.status, body: await response.json() };
 }
 
-export function paymentEvent(order: CheckoutResponse, overrides: Partial<MockEvent> = {}): MockEvent {
+export function paymentEvent(
+  order: CheckoutResponse,
+  overrides: Partial<MockEvent> = {},
+): MockEvent {
   return {
     id: `evt_test_${randomUUID().replace(/-/g, '')}`,
     type: 'checkout.session.completed',

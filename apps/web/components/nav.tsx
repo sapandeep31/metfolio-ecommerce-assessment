@@ -4,9 +4,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { signoutAction } from '../app/auth-actions';
+
 interface NavState {
   signedIn: boolean;
   isAdmin: boolean;
+  userEmail?: string | null;
   cartCount: number;
 }
 
@@ -48,16 +51,37 @@ export function Nav() {
       <div className="links">
         <Link href="/products">Catalog</Link>
         {state?.isAdmin && <Link href="/admin">Admin</Link>}
-        {state?.signedIn ? <Link href="/orders">Orders</Link> : <Link href="/login">Sign in</Link>}
+        {state?.signedIn ? (
+          <>
+            <Link href="/orders">Orders</Link>
+            <form action={signoutAction} style={{ display: 'inline' }}>
+              <button
+                type="submit"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'inherit',
+                  font: 'inherit',
+                  cursor: 'pointer',
+                  padding: 0,
+                  fontSize: '0.9rem',
+                }}
+              >
+                Sign out
+              </button>
+            </form>
+          </>
+        ) : (
+          <Link href="/login">Sign in</Link>
+        )}
         <Link href="/cart" data-testid="cart-link">
           Cart
-          {/* The count lives inside the link's accessible name rather than in a
-              separate badge, so a screen reader announces "Cart, 2 items" in one
-              go instead of reading a stray number after it. */}
           <span data-testid="cart-count" className="cart-count">
             {count > 0 ? ` (${count})` : ''}
           </span>
-          {count > 0 && <span className="sr-only">{count === 1 ? '1 item' : `${count} items`}</span>}
+          {count > 0 && (
+            <span className="sr-only">{count === 1 ? '1 item' : `${count} items`}</span>
+          )}
         </Link>
       </div>
     </nav>

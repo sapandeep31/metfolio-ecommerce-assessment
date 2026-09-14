@@ -11,7 +11,11 @@ import { API_BASE_URL, ADMIN, availableStock, fillCheckout, signIn } from './hel
  */
 
 /** Drive a variant down to exactly one available unit, through the admin API. */
-async function setAvailableToOne(context: BrowserContext, slug: string, sku: string): Promise<void> {
+async function setAvailableToOne(
+  context: BrowserContext,
+  slug: string,
+  sku: string,
+): Promise<void> {
   const page = await context.newPage();
   await signIn(page, ADMIN.email, ADMIN.password);
   await page.goto('/admin/stock');

@@ -90,9 +90,9 @@ describe('productQuerySchema', () => {
   });
 
   it('accepts an equal price range', () => {
-    expect(
-      productQuerySchema.safeParse({ minPriceCents: 1000, maxPriceCents: 1000 }).success,
-    ).toBe(true);
+    expect(productQuerySchema.safeParse({ minPriceCents: 1000, maxPriceCents: 1000 }).success).toBe(
+      true,
+    );
   });
 
   it('caps perPage so a client cannot ask for the whole catalog', () => {
@@ -154,18 +154,19 @@ describe('checkoutInputSchema', () => {
 
 describe('adminVariantInputSchema', () => {
   it('accepts a conventional SKU', () => {
-    expect(adminVariantInputSchema.safeParse({ sku: 'EAR1-WHT', name: 'White', priceCents: 100 }).success).toBe(
-      true,
-    );
+    expect(
+      adminVariantInputSchema.safeParse({ sku: 'EAR1-WHT', name: 'White', priceCents: 100 })
+        .success,
+    ).toBe(true);
   });
 
   it('rejects a lowercase or dash-leading SKU', () => {
-    expect(adminVariantInputSchema.safeParse({ sku: 'ear1-wht', name: 'W', priceCents: 1 }).success).toBe(
-      false,
-    );
-    expect(adminVariantInputSchema.safeParse({ sku: '-EAR', name: 'W', priceCents: 1 }).success).toBe(
-      false,
-    );
+    expect(
+      adminVariantInputSchema.safeParse({ sku: 'ear1-wht', name: 'W', priceCents: 1 }).success,
+    ).toBe(false);
+    expect(
+      adminVariantInputSchema.safeParse({ sku: '-EAR', name: 'W', priceCents: 1 }).success,
+    ).toBe(false);
   });
 
   it('rejects a negative price', () => {

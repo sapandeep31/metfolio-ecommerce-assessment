@@ -31,7 +31,10 @@ export const ALLOWED_MIME_TYPES: Readonly<Record<string, string>> = {
 
 /** Magic-byte prefixes, checked against the declared type. */
 const MAGIC: ReadonlyArray<{ mime: string; test: (buffer: Buffer) => boolean }> = [
-  { mime: 'image/jpeg', test: (b) => b.length > 3 && b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff },
+  {
+    mime: 'image/jpeg',
+    test: (b) => b.length > 3 && b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff,
+  },
   {
     mime: 'image/png',
     test: (b) =>
@@ -48,11 +51,17 @@ const MAGIC: ReadonlyArray<{ mime: string; test: (buffer: Buffer) => boolean }> 
   // Both WebP and AVIF are container formats: RIFF....WEBP and ....ftyp<brand>.
   {
     mime: 'image/webp',
-    test: (b) => b.length > 12 && b.subarray(0, 4).toString('ascii') === 'RIFF' && b.subarray(8, 12).toString('ascii') === 'WEBP',
+    test: (b) =>
+      b.length > 12 &&
+      b.subarray(0, 4).toString('ascii') === 'RIFF' &&
+      b.subarray(8, 12).toString('ascii') === 'WEBP',
   },
   {
     mime: 'image/avif',
-    test: (b) => b.length > 12 && b.subarray(4, 8).toString('ascii') === 'ftyp' && b.subarray(8, 12).toString('ascii').startsWith('avi'),
+    test: (b) =>
+      b.length > 12 &&
+      b.subarray(4, 8).toString('ascii') === 'ftyp' &&
+      b.subarray(8, 12).toString('ascii').startsWith('avi'),
   },
 ];
 
@@ -93,9 +102,7 @@ export function validateUpload(candidate: UploadCandidate): void {
 
   const actual = sniffMimeType(candidate.body);
   if (actual !== declared) {
-    throw new StorageValidationError(
-      `File contents are not a valid ${declared} image.`,
-    );
+    throw new StorageValidationError(`File contents are not a valid ${declared} image.`);
   }
 }
 
@@ -119,7 +126,11 @@ export function buildStorageKey(productId: string, contentType: string): string 
  * before this check existed must not be trusted later.
  */
 export function assertSafeKey(key: string): void {
-  if (!/^[A-Za-z0-9][A-Za-z0-9/_.-]{0,200}$/.test(key) || key.includes('..') || key.includes('//')) {
+  if (
+    !/^[A-Za-z0-9][A-Za-z0-9/_.-]{0,200}$/.test(key) ||
+    key.includes('..') ||
+    key.includes('//')
+  ) {
     throw new StorageValidationError(`Unsafe storage key: ${key}`);
   }
 }

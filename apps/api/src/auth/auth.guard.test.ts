@@ -70,7 +70,9 @@ describe('AuthGuard', () => {
   it('rejects an alg:none token, the classic JWT bypass', () => {
     // Without algorithms: ['HS256'] this token verifies against any secret.
     const header = Buffer.from(JSON.stringify({ alg: 'none', typ: 'JWT' })).toString('base64url');
-    const body = Buffer.from(JSON.stringify({ sub: 'user_1', role: 'ADMIN' })).toString('base64url');
+    const body = Buffer.from(JSON.stringify({ sub: 'user_1', role: 'ADMIN' })).toString(
+      'base64url',
+    );
     const request = {
       headers: { authorization: `Bearer ${header}.${body}.` },
     } as unknown as AuthedRequest;

@@ -78,6 +78,17 @@ model User {
   @@map("users")
 }
 
+model Profile {
+  id          String   @id @db.Uuid
+  role        String   @default("customer")
+  displayName String?  @map("display_name")
+  email       String?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("profiles")
+}
+
 model Category {
   id        String   @id @default(cuid())
   slug      String   @unique

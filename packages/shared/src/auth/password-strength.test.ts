@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  isPasswordValid,
-  passwordSchema,
-  scorePassword,
-  PASSWORD_MIN,
-} from './password-strength';
+import { isPasswordValid, passwordSchema, scorePassword, PASSWORD_MIN } from './password-strength';
 
 describe('passwordSchema', () => {
   const valid = 'Str0ngPass!';

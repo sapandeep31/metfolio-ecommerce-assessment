@@ -140,7 +140,9 @@ export class CatalogService {
       case 'relevance':
         // Relevance without a search term is meaningless, so it degrades to
         // newest rather than returning an arbitrary order.
-        return query.q ? Prisma.sql`rank DESC, p."created_at" DESC` : Prisma.sql`p."created_at" DESC`;
+        return query.q
+          ? Prisma.sql`rank DESC, p."created_at" DESC`
+          : Prisma.sql`p."created_at" DESC`;
       case 'newest':
       default:
         return Prisma.sql`p."created_at" DESC`;

@@ -3,7 +3,9 @@ import { hashPassword, verifyPassword } from './password';
 
 describe('hashPassword', () => {
   it('produces the scrypt:salt:hash format', () => {
-    expect(hashPassword('correct horse battery staple')).toMatch(/^scrypt:[0-9a-f]{32}:[0-9a-f]{128}$/);
+    expect(hashPassword('correct horse battery staple')).toMatch(
+      /^scrypt:[0-9a-f]{32}:[0-9a-f]{128}$/,
+    );
   });
 
   it('salts, so the same password never hashes the same way twice', () => {

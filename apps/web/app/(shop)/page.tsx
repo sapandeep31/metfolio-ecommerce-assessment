@@ -40,9 +40,9 @@ export default async function HomePage() {
       <section className="hero">
         <h1>Hardware, sold correctly</h1>
         <p>
-          A storefront built around two guarantees: a payment webhook can be delivered ten times
-          and the order is still charged once, and the last unit in stock can be raced by twenty
-          buyers and exactly one of them gets it.
+          A storefront built around two guarantees: a payment webhook can be delivered ten times and
+          the order is still charged once, and the last unit in stock can be raced by twenty buyers
+          and exactly one of them gets it.
         </p>
         <div className="row" style={{ marginTop: 24 }}>
           <Link href="/products" className="btn btn-primary">

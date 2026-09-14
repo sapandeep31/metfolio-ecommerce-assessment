@@ -30,13 +30,7 @@ export type Role = z.infer<typeof roleSchema>;
 export const productStatusSchema = z.enum(['DRAFT', 'ACTIVE', 'ARCHIVED']);
 export type ProductStatus = z.infer<typeof productStatusSchema>;
 
-export const orderStatusSchema = z.enum([
-  'PENDING',
-  'PAID',
-  'FULFILLED',
-  'CANCELLED',
-  'EXPIRED',
-]);
+export const orderStatusSchema = z.enum(['PENDING', 'PAID', 'FULFILLED', 'CANCELLED', 'EXPIRED']);
 export type OrderStatus = z.infer<typeof orderStatusSchema>;
 
 export const stockMovementKindSchema = z.enum([

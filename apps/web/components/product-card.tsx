@@ -20,7 +20,13 @@ export function totalAvailable(product: Product): number {
  * stock" is a claim that can be a minute out of date. Listing pages that render
  * dynamically pass it, and the product page fetches live availability itself.
  */
-export function ProductCard({ product, showStock = false }: { product: Product; showStock?: boolean }) {
+export function ProductCard({
+  product,
+  showStock = false,
+}: {
+  product: Product;
+  showStock?: boolean;
+}) {
   const available = totalAvailable(product);
   const image = product.images[0];
 

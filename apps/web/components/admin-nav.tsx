@@ -26,7 +26,8 @@ export function AdminNav() {
       {TABS.map((tab) => {
         // Exact match for the index tab, prefix match for the rest, so
         // /admin/products/<id> still highlights "Products".
-        const active = tab.href === '/admin' ? pathname === '/admin' : pathname.startsWith(tab.href);
+        const active =
+          tab.href === '/admin' ? pathname === '/admin' : pathname.startsWith(tab.href);
         return (
           <Link key={tab.href} href={tab.href} aria-current={active ? 'page' : undefined}>
             {tab.label}

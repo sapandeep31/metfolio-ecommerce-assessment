@@ -54,7 +54,9 @@ export class InventoryService {
 
   /** Deterministic lock order. Every multi-line mutation goes through this. */
   static orderLines(lines: readonly StockLine[]): StockLine[] {
-    return [...lines].sort((a, b) => (a.variantId < b.variantId ? -1 : a.variantId > b.variantId ? 1 : 0));
+    return [...lines].sort((a, b) =>
+      a.variantId < b.variantId ? -1 : a.variantId > b.variantId ? 1 : 0,
+    );
   }
 
   /**

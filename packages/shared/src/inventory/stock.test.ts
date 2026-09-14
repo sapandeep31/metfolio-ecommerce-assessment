@@ -193,10 +193,7 @@ describe('replayLedger', () => {
   });
 
   it('nets to zero when every reservation is released', () => {
-    const movements = [
-      movementDeltas('RESERVE', 3),
-      movementDeltas('RELEASE', 3),
-    ];
+    const movements = [movementDeltas('RESERVE', 3), movementDeltas('RELEASE', 3)];
     expect(replayLedger(movements)).toEqual(level(0, 0));
   });
 });

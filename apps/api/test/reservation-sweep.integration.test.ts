@@ -57,7 +57,9 @@ describe('the SQL backstop', () => {
 
     await expireReservation(order.orderId);
 
-    const [swept] = await prisma.$queryRaw<Array<{ expired_orders: number; released_lines: number }>>`
+    const [swept] = await prisma.$queryRaw<
+      Array<{ expired_orders: number; released_lines: number }>
+    >`
       SELECT * FROM release_expired_reservations(100)`;
     expect(swept!.expired_orders).toBeGreaterThanOrEqual(1);
 
@@ -143,8 +145,9 @@ describe('the SQL backstop', () => {
     for (const order of orders) await expireReservation(order.orderId);
 
     await Promise.all(
-      Array.from({ length: 5 }, () =>
-        prisma.$queryRaw`SELECT * FROM release_expired_reservations(100)`,
+      Array.from(
+        { length: 5 },
+        () => prisma.$queryRaw`SELECT * FROM release_expired_reservations(100)`,
       ),
     );
 
@@ -178,9 +181,9 @@ describe('the lazy sweep in the checkout path', () => {
     const result = await checkout(buyer);
 
     expect(result.status).toBeLessThan(400);
-    expect(
-      (await prisma.order.findUniqueOrThrow({ where: { id: stale.orderId } })).status,
-    ).toBe('EXPIRED');
+    expect((await prisma.order.findUniqueOrThrow({ where: { id: stale.orderId } })).status).toBe(
+      'EXPIRED',
+    );
     expect((await stockOf(variant.variantId)).reserved).toBe(1);
   });
 

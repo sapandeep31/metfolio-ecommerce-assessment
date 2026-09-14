@@ -45,7 +45,10 @@ async function placeOrder(stock = 5, quantity = 2): Promise<CheckoutResponse> {
   await addToCart(cartId, variant.variantId, quantity);
   const result = await checkout(cartId);
   expect(result.status).toBeLessThan(400);
-  return { ...(result.body as CheckoutResponse), variantId: variant.variantId } as CheckoutResponse & {
+  return {
+    ...(result.body as CheckoutResponse),
+    variantId: variant.variantId,
+  } as CheckoutResponse & {
     variantId: string;
   };
 }
@@ -145,7 +148,10 @@ describe('out-of-order and unknown events', () => {
     // For Checkout Sessions the session event is authoritative. Acting on the
     // intent would race the session bookkeeping for no benefit.
     const order = (await placeOrder(3, 1)) as CheckoutResponse & { variantId: string };
-    const results = await deliverWebhook(paymentEvent(order, { type: 'payment_intent.succeeded' }), 1);
+    const results = await deliverWebhook(
+      paymentEvent(order, { type: 'payment_intent.succeeded' }),
+      1,
+    );
 
     expect(results[0]!.status).toBe(200);
     expect(results[0]!.detail).toContain('No action');
@@ -164,20 +170,27 @@ describe('out-of-order and unknown events', () => {
 
     const results = await deliverWebhook(event, 1);
     expect(results[0]!.status).toBe(200);
-    expect((await prisma.order.findUniqueOrThrow({ where: { id: order.orderId } })).status).toBe('PAID');
+    expect((await prisma.order.findUniqueOrThrow({ where: { id: order.orderId } })).status).toBe(
+      'PAID',
+    );
   });
 
   it('releases the reservation on an expired session', async () => {
     const order = (await placeOrder(3, 2)) as CheckoutResponse & { variantId: string };
     expect((await stockOf(order.variantId)).reserved).toBe(2);
 
-    const results = await deliverWebhook(paymentEvent(order, { type: 'checkout.session.expired' }), 1);
+    const results = await deliverWebhook(
+      paymentEvent(order, { type: 'checkout.session.expired' }),
+      1,
+    );
     expect(results[0]!.status).toBe(200);
 
     const stock = await stockOf(order.variantId);
     expect(stock.reserved).toBe(0);
     expect(stock.onHand).toBe(3); // nothing shipped
-    expect((await prisma.order.findUniqueOrThrow({ where: { id: order.orderId } })).status).toBe('EXPIRED');
+    expect((await prisma.order.findUniqueOrThrow({ where: { id: order.orderId } })).status).toBe(
+      'EXPIRED',
+    );
   });
 
   it('leaves the order PENDING on a failed payment so the customer can retry', async () => {
@@ -205,7 +218,9 @@ describe('out-of-order and unknown events', () => {
     const late = await deliverWebhook(paymentEvent(order), 1);
     expect(late[0]!.status).toBe(200);
     expect(late[0]!.detail).toContain('EXPIRED');
-    expect((await prisma.order.findUniqueOrThrow({ where: { id: order.orderId } })).status).toBe('EXPIRED');
+    expect((await prisma.order.findUniqueOrThrow({ where: { id: order.orderId } })).status).toBe(
+      'EXPIRED',
+    );
   });
 });
 

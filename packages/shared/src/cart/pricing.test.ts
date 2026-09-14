@@ -132,9 +132,7 @@ describe('priceCart', () => {
     expect(result.shippingCents).toBe(0); // over the 5000 threshold
     expect(result.taxCents).toBe(1_111); // 12700 * 0.0875 = 1111.25 -> 1111
     expect(result.totalCents).toBe(13_811);
-    expect(result.totalCents).toBe(
-      result.subtotalCents + result.shippingCents + result.taxCents,
-    );
+    expect(result.totalCents).toBe(result.subtotalCents + result.shippingCents + result.taxCents);
   });
 
   it('adds shipping under the threshold and does not tax it', () => {
@@ -158,9 +156,7 @@ describe('priceCart', () => {
 
   it('echoes each line total back', () => {
     const result = priceCart([{ unitPriceCents: 1_500, quantity: 3 }], policy);
-    expect(result.lines).toEqual([
-      { unitPriceCents: 1_500, quantity: 3, lineTotalCents: 4_500 },
-    ]);
+    expect(result.lines).toEqual([{ unitPriceCents: 1_500, quantity: 3, lineTotalCents: 4_500 }]);
   });
 
   it('rejects a cart with too many lines', () => {

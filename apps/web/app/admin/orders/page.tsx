@@ -64,9 +64,7 @@ export default async function AdminOrdersPage({
                 <td>
                   <span className={`badge ${BADGE[order.status]}`}>{order.status}</span>
                 </td>
-                <td className="num">
-                  {order.items.reduce((sum, item) => sum + item.quantity, 0)}
-                </td>
+                <td className="num">{order.items.reduce((sum, item) => sum + item.quantity, 0)}</td>
                 <td className="num">{formatMoney(order.totalCents, order.currency)}</td>
                 <td>
                   {/* Only a PAID order can be fulfilled. Anything else has either

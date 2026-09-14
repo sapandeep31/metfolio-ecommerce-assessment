@@ -100,7 +100,11 @@ export class AdminController {
   @Patch('variants/:id')
   updateVariant(
     @Param('id', new ZodValidationPipe(idSchema)) id: string,
-    @Body(new ZodValidationPipe(adminVariantInputSchema.partial().omit({ sku: true, stockOnHand: true })))
+    @Body(
+      new ZodValidationPipe(
+        adminVariantInputSchema.partial().omit({ sku: true, stockOnHand: true }),
+      ),
+    )
     body: Partial<Pick<AdminVariantInput, 'name' | 'priceCents' | 'position'>>,
   ): Promise<Product> {
     return this.admin.updateVariant(id, body);
