@@ -1,9 +1,12 @@
 import { productQuerySchema, type Category, type ProductList } from '@shop/shared';
 import Link from 'next/link';
 import { ProductCard } from '@/components/product-card';
-import { publicApiFetch } from '@/lib/api';
+import { cachedApiFetch } from '@/lib/api';
 
-export const dynamic = 'force-dynamic';
+// ISR: product listings revalidate every 30s and immediately on admin edits.
+// Stock counts on a listing page don't need sub-second freshness — the product
+// detail page is where real-time availability matters for checkout.
+export const revalidate = 30;
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -56,8 +59,8 @@ export default async function ProductsPage({
   search.set('perPage', String(query.perPage));
 
   const [list, categories] = await Promise.all([
-    publicApiFetch<ProductList>(`/products?${search.toString()}`),
-    publicApiFetch<Category[]>('/categories'),
+    cachedApiFetch<ProductList>(`/products?${search.toString()}`, ['catalog'], 30),
+    cachedApiFetch<Category[]>('/categories', ['catalog'], 60),
   ]);
 
   const base = {

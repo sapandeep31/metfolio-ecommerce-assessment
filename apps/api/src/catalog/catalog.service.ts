@@ -2,6 +2,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@shop/db';
 import type { Category, Product, ProductList, ProductQuery } from '@shop/shared';
 import { createStorage, type StorageDriver } from '@shop/storage';
+import { MemoryCache } from '../common/memory-cache';
 import { CONFIG, type AppConfig } from '../config/config';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -16,6 +17,7 @@ type ProductRow = Prisma.ProductGetPayload<{ include: typeof PRODUCT_INCLUDE }>;
 @Injectable()
 export class CatalogService {
   private readonly storage: StorageDriver;
+  private readonly cache = new MemoryCache(30_000);
 
   constructor(
     private readonly prisma: PrismaService,
@@ -25,8 +27,10 @@ export class CatalogService {
   }
 
   async listCategories(): Promise<Category[]> {
-    const rows = await this.prisma.category.findMany({ orderBy: { name: 'asc' } });
-    return rows.map((row) => ({ id: row.id, slug: row.slug, name: row.name }));
+    return this.cache.getOrSet('catalog:categories', async () => {
+      const rows = await this.prisma.category.findMany({ orderBy: { name: 'asc' } });
+      return rows.map((row) => ({ id: row.id, slug: row.slug, name: row.name }));
+    }, 60_000);
   }
 
   /**
@@ -35,32 +39,35 @@ export class CatalogService {
    * that could return an unpublished product to a customer.
    */
   async listProducts(query: ProductQuery): Promise<ProductList> {
-    const ids = await this.findMatchingIds(query);
-    const skip = (query.page - 1) * query.perPage;
-    const pageIds = ids.slice(skip, skip + query.perPage);
+    const cacheKey = `catalog:list:${JSON.stringify(query)}`;
+    return this.cache.getOrSet(cacheKey, async () => {
+      const ids = await this.findMatchingIds(query);
+      const skip = (query.page - 1) * query.perPage;
+      const pageIds = ids.slice(skip, skip + query.perPage);
 
-    const rows = pageIds.length
-      ? await this.prisma.product.findMany({
-          where: { id: { in: pageIds } },
-          include: PRODUCT_INCLUDE,
-        })
-      : [];
+      const rows = pageIds.length
+        ? await this.prisma.product.findMany({
+            where: { id: { in: pageIds } },
+            include: PRODUCT_INCLUDE,
+          })
+        : [];
 
-    // findMany does not preserve the ordering of an IN list, so the ranked order
-    // computed by the search query is reapplied here.
-    const byId = new Map(rows.map((row) => [row.id, row]));
-    const items = pageIds
-      .map((id) => byId.get(id))
-      .filter((row): row is ProductRow => row !== undefined)
-      .map((row) => this.toProduct(row));
+      // findMany does not preserve the ordering of an IN list, so the ranked order
+      // computed by the search query is reapplied here.
+      const byId = new Map(rows.map((row) => [row.id, row]));
+      const items = pageIds
+        .map((id) => byId.get(id))
+        .filter((row): row is ProductRow => row !== undefined)
+        .map((row) => this.toProduct(row));
 
-    return {
-      items,
-      total: ids.length,
-      page: query.page,
-      perPage: query.perPage,
-      totalPages: Math.ceil(ids.length / query.perPage),
-    };
+      return {
+        items,
+        total: ids.length,
+        page: query.page,
+        perPage: query.perPage,
+        totalPages: Math.ceil(ids.length / query.perPage),
+      };
+    });
   }
 
   /**
@@ -151,12 +158,22 @@ export class CatalogService {
 
   /** Storefront product page. 404 on anything not ACTIVE. */
   async getProductBySlug(slug: string): Promise<Product> {
-    const row = await this.prisma.product.findFirst({
-      where: { slug, status: 'ACTIVE' },
-      include: PRODUCT_INCLUDE,
+    return this.cache.getOrSet(`catalog:slug:${slug}`, async () => {
+      const row = await this.prisma.product.findFirst({
+        where: { slug, status: 'ACTIVE' },
+        include: PRODUCT_INCLUDE,
+      });
+      if (!row) throw new NotFoundException('Product not found');
+      return this.toProduct(row);
     });
-    if (!row) throw new NotFoundException('Product not found');
-    return this.toProduct(row);
+  }
+
+  /**
+   * Evict all cached catalog data. Called by AdminService after any product,
+   * category, or stock mutation so the next read sees the fresh state.
+   */
+  invalidateCache(): void {
+    this.cache.invalidatePrefix('catalog:');
   }
 
   /**

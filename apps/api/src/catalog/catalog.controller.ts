@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Header, Param, Query } from '@nestjs/common';
 import {
   productQuerySchema,
   slugSchema,
@@ -16,11 +16,13 @@ export class CatalogController {
   constructor(private readonly catalog: CatalogService) {}
 
   @Get('categories')
+  @Header('Cache-Control', 's-maxage=60, stale-while-revalidate=120')
   listCategories(): Promise<Category[]> {
     return this.catalog.listCategories();
   }
 
   @Get('products')
+  @Header('Cache-Control', 's-maxage=30, stale-while-revalidate=60')
   listProducts(
     @Query(new ZodValidationPipe(productQuerySchema)) query: ProductQuery,
   ): Promise<ProductList> {
@@ -28,6 +30,7 @@ export class CatalogController {
   }
 
   @Get('products/:slug')
+  @Header('Cache-Control', 's-maxage=30, stale-while-revalidate=60')
   getProduct(@Param('slug', new ZodValidationPipe(slugSchema)) slug: string): Promise<Product> {
     return this.catalog.getProductBySlug(slug);
   }

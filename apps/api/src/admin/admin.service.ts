@@ -69,6 +69,7 @@ export class AdminService {
         },
         include: PRODUCT_INCLUDE,
       });
+      this.catalog.invalidateCache();
       return this.catalog.toProduct(row);
     } catch (error) {
       if (isUniqueViolation(error)) throw new ConflictException('That slug is already taken');
@@ -83,6 +84,7 @@ export class AdminService {
         data: input,
         include: PRODUCT_INCLUDE,
       });
+      this.catalog.invalidateCache();
       return this.catalog.toProduct(row);
     } catch (error) {
       if (isUniqueViolation(error)) throw new ConflictException('That slug is already taken');
@@ -138,6 +140,7 @@ export class AdminService {
       if (isUniqueViolation(error)) throw new ConflictException('That SKU already exists');
       throw error;
     }
+    this.catalog.invalidateCache();
     return this.getProduct(productId);
   }
 
@@ -153,6 +156,7 @@ export class AdminService {
         data: input,
         select: { productId: true },
       });
+      this.catalog.invalidateCache();
       return this.getProduct(variant.productId);
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
@@ -190,6 +194,7 @@ export class AdminService {
           `(on hand ${variant.stockOnHand}).`,
       );
     }
+    this.catalog.invalidateCache();
     return this.getStock(variantId);
   }
 
@@ -271,6 +276,7 @@ export class AdminService {
     const image = await this.prisma.productImage.create({
       data: { productId, storageKey: key, alt: input.alt, position: input.position },
     });
+    this.catalog.invalidateCache();
     return {
       id: image.id,
       url: this.storage.urlFor(image.storageKey),
@@ -286,6 +292,7 @@ export class AdminService {
     // a broken image on the storefront, which is the worse of the two.
     await this.prisma.productImage.delete({ where: { id: imageId } });
     await this.storage.delete(image.storageKey);
+    this.catalog.invalidateCache();
     return { ok: true };
   }
 }

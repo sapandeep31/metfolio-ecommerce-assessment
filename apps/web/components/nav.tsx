@@ -41,11 +41,17 @@ export function Nav() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
+      // Transition from transparent to colored only when scrolling out of the hero section
+      const heroThreshold = Math.max(window.innerHeight - 120, 400);
+      setIsScrolled(window.scrollY > heroThreshold);
     };
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
   }, []);
 
   const isHome = pathname === '/';
