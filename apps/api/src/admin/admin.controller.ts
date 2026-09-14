@@ -164,4 +164,13 @@ export class AdminController {
   ): Promise<Order> {
     return this.orders.fulfill(id, user.role);
   }
+
+  @Post('orders/:id/refund')
+  refundOrder(
+    @CurrentUser() user: CurrentUserInfo,
+    @Param('id', new ZodValidationPipe(idSchema)) id: string,
+    @Body() body?: { reason?: string },
+  ): Promise<Order> {
+    return this.orders.refund(id, user.role, body?.reason);
+  }
 }

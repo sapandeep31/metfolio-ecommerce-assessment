@@ -156,6 +156,19 @@ export async function adminFulfillOrder(orderId: string): Promise<ActionState> {
   return {};
 }
 
+export async function adminRefundOrder(orderId: string, reason?: string): Promise<ActionState> {
+  try {
+    await apiFetch(`/admin/orders/${orderId}/refund`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    });
+  } catch (error) {
+    return { error: error instanceof ApiError ? error.message : 'Could not refund that order.' };
+  }
+  revalidatePath('/admin/orders');
+  return {};
+}
+
 export async function adminChangeStock(
   variantId: string,
   kind: 'RESTOCK' | 'ADJUST',

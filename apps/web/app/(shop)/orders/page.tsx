@@ -12,6 +12,7 @@ const BADGE: Record<OrderStatus, string> = {
   FULFILLED: 'badge-fulfilled',
   CANCELLED: 'badge-cancelled',
   EXPIRED: 'badge-expired',
+  REFUNDED: 'badge-refunded',
 };
 
 export default async function OrdersPage() {

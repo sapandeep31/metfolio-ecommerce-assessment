@@ -35,6 +35,7 @@ describe('parseStripeEvent', () => {
       isPaymentComplete: true,
       isPaymentFailed: false,
       isSessionExpired: false,
+      isRefunded: false,
     });
   });
 
@@ -119,6 +120,32 @@ describe('parseStripeEvent', () => {
     expect(parsed.orderId).toBe('order_1');
   });
 
+  it('maps a charge.refunded event to isRefunded true', () => {
+    const parsed = parseStripeEvent(
+      stripeEvent('charge.refunded', {
+        id: 'ch_test_1',
+        payment_intent: 'pi_test_1',
+        amount_refunded: 35_561,
+        currency: 'usd',
+        metadata: { orderId: 'order_1' },
+        refunds: { data: [{ id: 're_test_1' }] },
+      }),
+    );
+    expect(parsed).toEqual({
+      eventId: 'evt_test_1',
+      type: 'charge.refunded',
+      orderId: 'order_1',
+      paymentIntentId: 'pi_test_1',
+      amountCents: 35_561,
+      currency: 'usd',
+      isPaymentComplete: false,
+      isPaymentFailed: false,
+      isSessionExpired: false,
+      isRefunded: true,
+      refundId: 're_test_1',
+    });
+  });
+
   it('normalizes an unrelated event to an inert result instead of throwing', () => {
     const parsed = parseStripeEvent(stripeEvent('customer.created', { id: 'cus_1' }));
     expect(parsed).toMatchObject({
@@ -127,6 +154,7 @@ describe('parseStripeEvent', () => {
       isPaymentComplete: false,
       isPaymentFailed: false,
       isSessionExpired: false,
+      isRefunded: false,
     });
   });
 });
@@ -288,5 +316,47 @@ describe('createStripeGateway', () => {
       client,
     });
     expect(gateway.verifyWebhook('{}', 'good').orderId).toBe('order_1');
+  });
+
+  it('issues a refund with an idempotency key', async () => {
+    const refundCreate = vi.fn().mockResolvedValue({
+      id: 're_123',
+      status: 'succeeded',
+      amount: 14900,
+    });
+    const client = {
+      checkout: { sessions: { create: vi.fn() } },
+      refunds: { create: refundCreate },
+      webhooks: { constructEvent: vi.fn() },
+    } as unknown as Stripe;
+
+    const gateway = createStripeGateway({
+      secretKey: 'sk_test',
+      webhookSecret: 'whsec_test',
+      currency: 'usd',
+      client,
+    });
+
+    const result = await gateway.refundPayment({
+      orderId: 'order_1',
+      paymentIntentId: 'pi_123',
+      amountCents: 14900,
+    });
+
+    expect(result).toEqual({
+      refundId: 're_123',
+      status: 'succeeded',
+      amountCents: 14900,
+    });
+
+    expect(refundCreate).toHaveBeenCalledWith(
+      {
+        payment_intent: 'pi_123',
+        charge: undefined,
+        amount: 14900,
+        metadata: { orderId: 'order_1' },
+      },
+      { idempotencyKey: 'refund:order_1:14900' },
+    );
   });
 });

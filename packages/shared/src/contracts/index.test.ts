@@ -48,6 +48,7 @@ describe('order status transitions', () => {
     expect(isTerminalOrderStatus('FULFILLED')).toBe(true);
     expect(isTerminalOrderStatus('CANCELLED')).toBe(true);
     expect(isTerminalOrderStatus('EXPIRED')).toBe(true);
+    expect(isTerminalOrderStatus('REFUNDED')).toBe(true);
     expect(isTerminalOrderStatus('PENDING')).toBe(false);
     expect(isTerminalOrderStatus('PAID')).toBe(false);
   });

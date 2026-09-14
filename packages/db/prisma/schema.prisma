@@ -48,6 +48,7 @@ enum OrderStatus {
   FULFILLED
   CANCELLED
   EXPIRED
+  REFUNDED
 }
 
 enum StockMovementKind {
@@ -62,6 +63,7 @@ enum PaymentStatus {
   PENDING
   SUCCEEDED
   FAILED
+  REFUNDED
 }
 
 model User {

@@ -13,6 +13,7 @@ const BADGE: Record<OrderStatus, string> = {
   FULFILLED: 'badge-fulfilled',
   CANCELLED: 'badge-cancelled',
   EXPIRED: 'badge-expired',
+  REFUNDED: 'badge-refunded',
 };
 
 export default async function OrderPage({
@@ -72,6 +73,12 @@ export default async function OrderPage({
       {order.status === 'EXPIRED' && (
         <p className="notice" data-testid="expired-notice">
           This order expired before payment landed, and the stock went back on the shelf.
+        </p>
+      )}
+      {order.status === 'REFUNDED' && (
+        <p className="notice" data-testid="refunded-notice">
+          This order was refunded. The payment has been returned to your payment method and
+          inventory was restored.
         </p>
       )}
 

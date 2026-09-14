@@ -1,7 +1,10 @@
 import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@shop/db';
+import type { PaymentGateway } from '@shop/payments';
 import type { Order, OrderList, OrderListQuery, Role } from '@shop/shared';
 import { CONFIG, type AppConfig } from '../config/config';
+import { PAYMENTS } from '../core/core.module';
+import { InventoryService } from '../inventory/inventory.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { verifyOrderAccessToken } from './order-access-token';
 
@@ -13,6 +16,8 @@ export class OrdersService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(CONFIG) private readonly config: AppConfig,
+    @Inject(PAYMENTS) private readonly payments: PaymentGateway,
+    private readonly inventory: InventoryService,
   ) {}
 
   /**
@@ -102,6 +107,71 @@ export class OrdersService {
       throw new ForbiddenException(`Cannot fulfil an order in state ${row.status}`);
     }
     return this.toOrder(row);
+  }
+
+  /**
+   * Refund a paid order via the payment gateway and restock inventory.
+   *
+   * Idempotent: if already REFUNDED, returns the order.
+   * Guarded on PAID: only PAID orders can transition to REFUNDED.
+   */
+  async refund(orderId: string, actorRole: Role, reason?: string): Promise<Order> {
+    if (actorRole !== 'ADMIN') throw new ForbiddenException('Admins only');
+
+    const row = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        ...ORDER_INCLUDE,
+        payments: {
+          where: { status: 'SUCCEEDED' },
+          orderBy: { createdAt: 'desc' },
+        },
+      },
+    });
+    if (!row) throw new NotFoundException('Order not found');
+
+    if (row.status === 'REFUNDED') {
+      return this.toOrder(row);
+    }
+    if (row.status !== 'PAID') {
+      throw new ForbiddenException(`Cannot refund an order in state ${row.status}`);
+    }
+
+    const succeededPayment = row.payments[0];
+    if (succeededPayment?.paymentIntentId) {
+      await this.payments.refundPayment({
+        orderId: row.id,
+        paymentIntentId: succeededPayment.paymentIntentId,
+        amountCents: row.totalCents,
+        reason: 'requested_by_customer',
+      });
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      const updated = await tx.$executeRaw`
+        UPDATE "orders"
+           SET "status" = 'REFUNDED'::"OrderStatus",
+               "closed_at" = NOW(),
+               "updated_at" = NOW()
+         WHERE "id" = ${orderId}
+           AND "status" = 'PAID'::"OrderStatus"`;
+
+      if (updated === 1) {
+        await tx.payment.updateMany({
+          where: { orderId, status: 'SUCCEEDED' },
+          data: { status: 'REFUNDED', updatedAt: new Date() },
+        });
+
+        const items = row.items.map((i) => ({ variantId: i.variantId, quantity: i.quantity }));
+        await this.inventory.restockRefunded(tx, orderId, items);
+      }
+    });
+
+    const updatedRow = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      include: ORDER_INCLUDE,
+    });
+    return this.toOrder(updatedRow!);
   }
 
   private async paginate(where: Prisma.OrderWhereInput, query: OrderListQuery): Promise<OrderList> {

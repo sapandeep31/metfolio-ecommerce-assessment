@@ -178,9 +178,25 @@ describe('verifyWebhook', () => {
 });
 
 describe('isMockEventType', () => {
-  it('recognises exactly the four emitted types', () => {
+  it('recognises emitted types including charge.refunded', () => {
     expect(isMockEventType('checkout.session.completed')).toBe(true);
     expect(isMockEventType('payment_intent.succeeded')).toBe(true);
-    expect(isMockEventType('charge.refunded')).toBe(false);
+    expect(isMockEventType('charge.refunded')).toBe(true);
+    expect(isMockEventType('unknown.type')).toBe(false);
+  });
+
+  it('parses a mock refund event', () => {
+    const parsed = parseMockEvent({
+      id: 'evt_mock_ref',
+      type: 'charge.refunded',
+      created: 123456,
+      data: {
+        sessionId: 'cs_mock_1',
+        orderId: 'order_1',
+        amountCents: 5000,
+      },
+    });
+    expect(parsed.isRefunded).toBe(true);
+    expect(parsed.amountCents).toBe(5000);
   });
 });

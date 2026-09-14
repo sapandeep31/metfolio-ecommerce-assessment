@@ -59,6 +59,20 @@ export interface CheckoutResult {
   url: string;
 }
 
+export interface RefundParams {
+  orderId?: string;
+  paymentIntentId?: string;
+  chargeId?: string;
+  amountCents?: number;
+  reason?: 'duplicate' | 'fraudulent' | 'requested_by_customer';
+}
+
+export interface RefundResult {
+  refundId: string;
+  status: string;
+  amountCents: number;
+}
+
 /**
  * Normalized webhook, driver-independent. The API's handler only ever sees this
  * shape, so the Stripe and mock paths exercise identical code after verification.
@@ -79,11 +93,15 @@ export interface ParsedWebhook {
   isPaymentFailed: boolean;
   /** True when the gateway session lapsed without payment. */
   isSessionExpired: boolean;
+  /** True when this event means the payment was refunded. */
+  isRefunded: boolean;
+  refundId?: string;
 }
 
 export interface PaymentGateway {
   readonly name: PaymentDriverName;
   createCheckoutSession(params: CheckoutParams): Promise<CheckoutResult>;
+  refundPayment(params: RefundParams): Promise<RefundResult>;
   /**
    * Verify the provider's signature over the raw body and return the normalized
    * event. Throws `WebhookSignatureError` when the signature does not check out;

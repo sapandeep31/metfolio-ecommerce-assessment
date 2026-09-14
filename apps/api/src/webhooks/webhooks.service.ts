@@ -148,6 +148,7 @@ export class WebhooksService {
     if (event.isPaymentComplete) return this.completePayment(tx, event);
     if (event.isPaymentFailed) return this.failPayment(tx, event);
     if (event.isSessionExpired) return this.expireSession(tx, event);
+    if (event.isRefunded) return this.refundPayment(tx, event);
 
     // Everything else (payment_intent.succeeded, unrelated event types) is
     // recorded and acknowledged. Answering anything but 200 to an event we do
@@ -315,10 +316,68 @@ export class WebhooksService {
     };
   }
 
+  private async refundPayment(
+    tx: Prisma.TransactionClient,
+    event: ParsedWebhook,
+  ): Promise<WebhookOutcome> {
+    const order = await this.resolveOrder(tx, event);
+    if (!order) {
+      return {
+        handled: false,
+        duplicate: false,
+        retryable: true,
+        detail: `No order for refund event ${event.eventId}; asking provider to retry`,
+      };
+    }
+
+    if (order.status === 'REFUNDED') {
+      return {
+        handled: true,
+        duplicate: false,
+        retryable: false,
+        detail: `Order ${order.number} is already REFUNDED; event ignored`,
+      };
+    }
+
+    const claimed = await tx.$executeRaw`
+      UPDATE "orders"
+         SET "status" = 'REFUNDED'::"OrderStatus",
+             "closed_at" = NOW(),
+             "updated_at" = NOW()
+       WHERE "id" = ${order.id}
+         AND "status" = 'PAID'::"OrderStatus"`;
+
+    if (claimed === 0) {
+      return {
+        handled: true,
+        duplicate: false,
+        retryable: false,
+        detail: `Order ${order.number} is in status ${order.status}; cannot refund`,
+      };
+    }
+
+    await tx.payment.updateMany({
+      where: { orderId: order.id, status: 'SUCCEEDED' },
+      data: { status: 'REFUNDED', updatedAt: new Date() },
+    });
+
+    const items = await tx.orderItem.findMany({
+      where: { orderId: order.id },
+      select: { variantId: true, quantity: true },
+    });
+    await this.inventory.restockRefunded(tx, order.id, items);
+
+    return {
+      handled: true,
+      duplicate: false,
+      retryable: false,
+      detail: `Order ${order.number} refunded and stock restocked`,
+    };
+  }
+
   /**
    * Find the order from the event. Metadata is the primary route; the session id
-   * is the fallback for a provider event that lost the metadata, which is why
-   * the Payment row carries the session id at all.
+   * or payment intent id are fallbacks for provider events that omitted metadata.
    */
   private async resolveOrder(
     tx: Prisma.TransactionClient,
@@ -326,7 +385,7 @@ export class WebhooksService {
   ): Promise<{
     id: string;
     number: string;
-    status: 'PENDING' | 'PAID' | 'FULFILLED' | 'CANCELLED' | 'EXPIRED';
+    status: 'PENDING' | 'PAID' | 'FULFILLED' | 'CANCELLED' | 'EXPIRED' | 'REFUNDED';
   } | null> {
     if (event.orderId) {
       const order = await tx.order.findUnique({
@@ -338,6 +397,13 @@ export class WebhooksService {
     if (event.sessionId) {
       const payment = await tx.payment.findUnique({
         where: { sessionId: event.sessionId },
+        select: { order: { select: { id: true, number: true, status: true } } },
+      });
+      if (payment?.order) return payment.order;
+    }
+    if (event.paymentIntentId) {
+      const payment = await tx.payment.findFirst({
+        where: { paymentIntentId: event.paymentIntentId },
         select: { order: { select: { id: true, number: true, status: true } } },
       });
       if (payment?.order) return payment.order;

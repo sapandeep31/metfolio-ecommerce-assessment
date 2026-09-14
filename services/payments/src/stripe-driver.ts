@@ -14,6 +14,8 @@ import {
   type CheckoutResult,
   type PaymentGateway,
   type ParsedWebhook,
+  type RefundParams,
+  type RefundResult,
 } from './types';
 
 /** Pinned deliberately: an unpinned API version changes payload shapes silently. */
@@ -31,6 +33,7 @@ export function parseStripeEvent(event: Stripe.Event): ParsedWebhook {
     isPaymentComplete: false,
     isPaymentFailed: false,
     isSessionExpired: false,
+    isRefunded: false,
   };
 
   if (event.type === 'checkout.session.completed') {
@@ -84,6 +87,19 @@ export function parseStripeEvent(event: Stripe.Event): ParsedWebhook {
       paymentIntentId: intent.id,
       amountCents: intent.amount ?? undefined,
       currency: intent.currency ?? undefined,
+    };
+  }
+
+  if (event.type === 'charge.refunded') {
+    const charge = event.data.object as Stripe.Charge;
+    return {
+      ...base,
+      orderId: charge.metadata?.orderId ?? undefined,
+      paymentIntentId: idOf(charge.payment_intent),
+      amountCents: charge.amount_refunded ?? undefined,
+      currency: charge.currency ?? undefined,
+      isRefunded: true,
+      refundId: charge.refunds?.data?.[0]?.id ?? undefined,
     };
   }
 
@@ -180,6 +196,33 @@ export function createStripeGateway(options: StripeDriverOptions): PaymentGatewa
         throw new Error('Stripe did not return a checkout URL');
       }
       return { sessionId: session.id, url: session.url };
+    },
+
+    async refundPayment(params: RefundParams): Promise<RefundResult> {
+      if (!params.paymentIntentId && !params.chargeId) {
+        throw new Error('refundPayment requires paymentIntentId or chargeId');
+      }
+
+      const idempotencyKey = `refund:${params.orderId ?? params.paymentIntentId ?? params.chargeId}:${params.amountCents ?? 'full'}`;
+
+      const refund = await stripe.refunds.create(
+        {
+          payment_intent: params.paymentIntentId,
+          charge: params.chargeId,
+          ...(params.amountCents ? { amount: params.amountCents } : {}),
+          ...(params.reason ? { reason: params.reason } : {}),
+          metadata: {
+            ...(params.orderId ? { orderId: params.orderId } : {}),
+          },
+        },
+        { idempotencyKey },
+      );
+
+      return {
+        refundId: refund.id,
+        status: refund.status ?? 'succeeded',
+        amountCents: refund.amount,
+      };
     },
 
     verifyWebhook(rawBody: Buffer | string, signature: string): ParsedWebhook {

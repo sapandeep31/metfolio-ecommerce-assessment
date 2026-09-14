@@ -165,6 +165,20 @@ export class InventoryService {
   }
 
   /**
+   * Restock items for a refunded order. On refund, goods are considered returned to stock.
+   */
+  async restockRefunded(tx: PrismaTx, orderId: string, lines: readonly StockLine[]): Promise<void> {
+    for (const line of InventoryService.orderLines(lines)) {
+      await tx.$executeRaw`
+        UPDATE "product_variants"
+           SET "stock_on_hand" = "stock_on_hand" + ${line.quantity},
+               "updated_at" = NOW()
+         WHERE "id" = ${line.variantId}`;
+      await this.writeLedger(tx, line.variantId, orderId, 'RESTOCK', line.quantity, 'order-refund');
+    }
+  }
+
+  /**
    * Admin restock or correction. `delta` is positive for RESTOCK and signed for
    * ADJUST. The guard mirrors the CHECK constraint so an over-aggressive
    * correction returns a clean failure instead of a 500 from the database.

@@ -951,12 +951,14 @@ select:disabled {
 }
 .badge-err,
 .badge-cancelled,
-.badge-expired {
+.badge-expired,
+.badge-refunded {
   color: var(--state-err);
 }
 .badge-err::before,
 .badge-cancelled::before,
-.badge-expired::before {
+.badge-expired::before,
+.badge-refunded::before {
   content: '\2715'; /* cross */
 }
 

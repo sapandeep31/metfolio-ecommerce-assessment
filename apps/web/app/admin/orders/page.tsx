@@ -1,6 +1,7 @@
 import { formatMoney, type OrderList, type OrderStatus } from '@shop/shared';
 import Link from 'next/link';
 import { FulfillButton } from '../../../components/fulfill-button';
+import { RefundButton } from '../../../components/refund-button';
 import { apiFetch } from '../../../lib/api';
 
 export const dynamic = 'force-dynamic';
@@ -11,6 +12,7 @@ const BADGE: Record<OrderStatus, string> = {
   FULFILLED: 'badge-fulfilled',
   CANCELLED: 'badge-cancelled',
   EXPIRED: 'badge-expired',
+  REFUNDED: 'badge-refunded',
 };
 
 export default async function AdminOrdersPage({
@@ -26,13 +28,13 @@ export default async function AdminOrdersPage({
 
   return (
     <>
-      <div className="row between">
+      <div className="row space-between">
         <h1>Orders</h1>
-        <div className="row">
+        <div className="row" style={{ gap: 6 }}>
           <Link href="/admin/orders" className="badge">
             All
           </Link>
-          {(['PENDING', 'PAID', 'FULFILLED', 'EXPIRED'] as const).map((value) => (
+          {(['PENDING', 'PAID', 'FULFILLED', 'EXPIRED', 'REFUNDED'] as const).map((value) => (
             <Link key={value} href={`/admin/orders?status=${value}`} className="badge">
               {value}
             </Link>
@@ -67,10 +69,12 @@ export default async function AdminOrdersPage({
                 <td className="num">{order.items.reduce((sum, item) => sum + item.quantity, 0)}</td>
                 <td className="num">{formatMoney(order.totalCents, order.currency)}</td>
                 <td>
-                  {/* Only a PAID order can be fulfilled. Anything else has either
-                      not been paid for or is already closed. */}
+                  {/* A PAID order can be fulfilled or refunded via Stripe. */}
                   {order.status === 'PAID' && (
-                    <FulfillButton orderId={order.id} number={order.number} />
+                    <div className="row" style={{ gap: 8 }}>
+                      <FulfillButton orderId={order.id} number={order.number} />
+                      <RefundButton orderId={order.id} number={order.number} />
+                    </div>
                   )}
                 </td>
               </tr>

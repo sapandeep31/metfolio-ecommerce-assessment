@@ -30,7 +30,14 @@ export type Role = z.infer<typeof roleSchema>;
 export const productStatusSchema = z.enum(['DRAFT', 'ACTIVE', 'ARCHIVED']);
 export type ProductStatus = z.infer<typeof productStatusSchema>;
 
-export const orderStatusSchema = z.enum(['PENDING', 'PAID', 'FULFILLED', 'CANCELLED', 'EXPIRED']);
+export const orderStatusSchema = z.enum([
+  'PENDING',
+  'PAID',
+  'FULFILLED',
+  'CANCELLED',
+  'EXPIRED',
+  'REFUNDED',
+]);
 export type OrderStatus = z.infer<typeof orderStatusSchema>;
 
 export const stockMovementKindSchema = z.enum([
@@ -42,7 +49,7 @@ export const stockMovementKindSchema = z.enum([
 ]);
 export type StockMovementKind = z.infer<typeof stockMovementKindSchema>;
 
-export const paymentStatusSchema = z.enum(['PENDING', 'SUCCEEDED', 'FAILED']);
+export const paymentStatusSchema = z.enum(['PENDING', 'SUCCEEDED', 'FAILED', 'REFUNDED']);
 export type PaymentStatus = z.infer<typeof paymentStatusSchema>;
 
 /**
@@ -52,10 +59,11 @@ export type PaymentStatus = z.infer<typeof paymentStatusSchema>;
  */
 export const ORDER_STATUS_TRANSITIONS: Readonly<Record<OrderStatus, readonly OrderStatus[]>> = {
   PENDING: ['PAID', 'CANCELLED', 'EXPIRED'],
-  PAID: ['FULFILLED', 'CANCELLED'],
+  PAID: ['FULFILLED', 'CANCELLED', 'REFUNDED'],
   FULFILLED: [],
   CANCELLED: [],
   EXPIRED: [],
+  REFUNDED: [],
 };
 
 export function canTransitionOrder(from: OrderStatus, to: OrderStatus): boolean {

@@ -24,6 +24,8 @@ import {
   type CheckoutResult,
   type PaymentGateway,
   type ParsedWebhook,
+  type RefundParams,
+  type RefundResult,
 } from './types';
 
 /** Event types the mock emits. Names mirror Stripe's so the handler is shared. */
@@ -32,6 +34,7 @@ export const MOCK_EVENT_TYPES = [
   'checkout.session.expired',
   'payment_intent.succeeded',
   'payment_intent.payment_failed',
+  'charge.refunded',
 ] as const;
 export type MockEventType = (typeof MOCK_EVENT_TYPES)[number];
 
@@ -68,6 +71,7 @@ export function parseMockEvent(event: MockEvent): ParsedWebhook {
     isPaymentComplete: event.type === 'checkout.session.completed',
     isPaymentFailed: event.type === 'payment_intent.payment_failed',
     isSessionExpired: event.type === 'checkout.session.expired',
+    isRefunded: event.type === 'charge.refunded',
   };
 }
 
@@ -127,6 +131,14 @@ export function createMockGateway(options: MockDriverOptions): PaymentGateway {
       url.searchParams.set('success', params.successUrl);
       url.searchParams.set('cancel', params.cancelUrl);
       return { sessionId, url: url.toString() };
+    },
+
+    async refundPayment(params: RefundParams): Promise<RefundResult> {
+      return {
+        refundId: `re_mock_${randomUUID().replace(/-/g, '')}`,
+        status: 'succeeded',
+        amountCents: params.amountCents ?? 0,
+      };
     },
 
     verifyWebhook(rawBody: Buffer | string, signature: string): ParsedWebhook {
