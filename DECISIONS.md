@@ -174,19 +174,32 @@ To make this system genuinely production-ready, we implemented several features 
 
 ---
 
-## 6. Week-Two Roadmap & Tradeoffs
+## 6. Tradeoffs & Evolution
 
-Given the tight timeline of this assessment, certain production tradeoffs were consciously made:
+### 6.1 What Was Cut for Time and Why
+
+Given the timebox of this technical assessment, we prioritized data integrity, concurrency safety, and payment correctness over non-critical secondary features:
 
 1. **Partial Line-Item Refunds:**
-   _Current:_ Full order refunds with complete inventory restocking.
-   _Week 2:_ Granular item-by-item refunds allowing customer support to refund damaged or returned goods while retaining shipping and tax accounting.
+   _Why cut:_ A customer requesting a refund for 1 item out of 3 requires granular tax, shipping recalculations, and fractional payment gateway intent captures. We implemented full order refunds with complete atomic inventory restocking and audit ledger synchronization, satisfying the payment correctness requirement without unnecessary accounting complexity.
 2. **Asynchronous Webhook Queue (BullMQ / AWS SQS):**
-   _Current:_ Synchronous transaction processing within the webhook HTTP request lifecycle.
-   _Week 2:_ Ingesting webhooks into a durable Redis queue with automatic exponential backoff, dead-letter queues (DLQ), and alerting for failed transactions.
-3. **Stripe Payment Elements & Local Payment Methods:**
-   _Current:_ Stripe Checkout Sessions hosted redirect.
-   _Week 2:_ Embedded Stripe Payment Elements supporting Apple Pay, Google Pay, Klarna, and localized 3D Secure 2 authentication without page redirection.
-4. **Database Read Replicas & Connection Pooling:**
-   _Current:_ Direct Supabase PostgreSQL connection via Prisma.
-   _Week 2:_ Supabase PgBouncer transaction pooling for high-concurrency serverless edge functions and separate read-replica routing for catalog browsing.
+   _Why cut:_ Synchronous in-transaction webhook ingestion with `INSERT ... ON CONFLICT DO NOTHING` and guarded state transitions already guarantees zero double-processing or race conditions. A durable message queue adds operational infrastructure overhead (workers, DLQs, broker monitoring) without altering the idempotency guarantee for the assessment scale.
+3. **Multi-Currency & Dynamic Tax Calculation:**
+   _Why cut:_ Explicitly listed as "not required" by the brief. All calculations use fixed integer basis points (`TAX_BASIS_POINTS`) in minor units (cents) to guarantee zero IEEE 754 floating-point inaccuracies.
+4. **Email Dispatch Reliability Worker:**
+   _Why cut:_ Confirmation emails fire post-transaction commit. In production, this would use a background retry queue so an unreachable SMTP server does not drop notifications.
+
+---
+
+### 6.2 What We Would Do Differently with Another Week
+
+With an additional week to iterate on this system:
+
+1. **Embedded Stripe Payment Elements:**
+   Replace the hosted Stripe Checkout redirect with embedded Payment Elements, supporting Apple Pay, Google Pay, and seamless 3D Secure 2 authentication directly within the storefront.
+2. **Distributed Queue Worker Pipeline:**
+   Decouple long-running notifications and external syncs from the webhook path using BullMQ on our Redis cluster, with dedicated dead-letter queues (DLQ) and Prometheus alerting.
+3. **PgBouncer Transaction Pooling & Read Replicas:**
+   Configure connection pooling via Supabase PgBouncer for burst traffic, and split read-only catalog browsing from transactional checkout writes.
+4. **Automated End-to-End Synthetic Monitoring:**
+   Deploy a headless cron job placing canary test-mode orders every hour to continuously verify gateway connectivity, webhook delivery latencies, and inventory ledger balance.

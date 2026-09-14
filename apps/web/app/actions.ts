@@ -3,6 +3,7 @@
 import type { Cart, CheckoutError, CheckoutResult } from '@shop/shared';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { auth } from '../auth';
 import { ApiError, apiFetch, cartApiFetch, getCartId } from '../lib/api';
 
 /**
@@ -146,7 +147,18 @@ export async function mergeGuestCart(guestCartId: string): Promise<void> {
 
 // ---- Admin actions ----
 
+async function assertAdmin(): Promise<ActionState | null> {
+  const session = await auth();
+  if (!session?.user || session.user.role !== 'ADMIN') {
+    return { error: 'Unauthorized: Admin privileges required.' };
+  }
+  return null;
+}
+
 export async function adminFulfillOrder(orderId: string): Promise<ActionState> {
+  const forbidden = await assertAdmin();
+  if (forbidden) return forbidden;
+
   try {
     await apiFetch(`/admin/orders/${orderId}/fulfill`, { method: 'POST' });
   } catch (error) {
@@ -157,6 +169,9 @@ export async function adminFulfillOrder(orderId: string): Promise<ActionState> {
 }
 
 export async function adminRefundOrder(orderId: string, reason?: string): Promise<ActionState> {
+  const forbidden = await assertAdmin();
+  if (forbidden) return forbidden;
+
   try {
     await apiFetch(`/admin/orders/${orderId}/refund`, {
       method: 'POST',
@@ -175,6 +190,9 @@ export async function adminChangeStock(
   quantity: number,
   reason: string,
 ): Promise<ActionState> {
+  const forbidden = await assertAdmin();
+  if (forbidden) return forbidden;
+
   try {
     await apiFetch(`/admin/variants/${variantId}/stock`, {
       method: 'POST',
@@ -191,6 +209,9 @@ export async function adminChangeStock(
 }
 
 export async function adminCreateProduct(formData: FormData): Promise<ActionState> {
+  const forbidden = await assertAdmin();
+  if (forbidden) return forbidden;
+
   try {
     await apiFetch('/admin/products', {
       method: 'POST',
@@ -214,6 +235,9 @@ export async function adminUpdateProductStatus(
   productId: string,
   status: 'DRAFT' | 'ACTIVE' | 'ARCHIVED',
 ): Promise<ActionState> {
+  const forbidden = await assertAdmin();
+  if (forbidden) return forbidden;
+
   try {
     await apiFetch(`/admin/products/${productId}`, {
       method: 'PATCH',
@@ -231,6 +255,9 @@ export async function adminCreateVariant(
   productId: string,
   formData: FormData,
 ): Promise<ActionState> {
+  const forbidden = await assertAdmin();
+  if (forbidden) return forbidden;
+
   try {
     await apiFetch(`/admin/products/${productId}/variants`, {
       method: 'POST',

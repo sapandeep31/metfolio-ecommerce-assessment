@@ -20,9 +20,12 @@ cart, checkout, then the mock gateway delivering the same payment webhook
 **twenty times at once**. The order is charged once, and the stock ledger closes
 on one `RESERVE` and one `FULFILL`._
 
-Not deployed anywhere, deliberately: the repo is the artefact. It runs locally in
-about a minute (see [Running it](#running-it)), and the GIF above is reproducible
-with `./scripts/demo-gif.sh`.
+Live deployment:
+- **Storefront & Admin (Vercel):** `https://metfolio-ecommerce-assessment.vercel.app`
+- **REST & Concurrency API (Render):** `https://metfolio-oms-api.onrender.com`
+- **Test Credentials:** `admin@shop.local` (ADMIN) and `customer@shop.local` (CUSTOMER), both with password `password123`.
+
+To run locally in about a minute, see [Running it](#running-it). The GIF above is reproducible with `./scripts/demo-gif.sh`.
 
 ---
 
@@ -187,10 +190,36 @@ the project name from it and two stacks evict each other.
 
 Seeded logins, both with password `password123`:
 
-| Email                 | Role     |
-| --------------------- | -------- |
-| `admin@shop.local`    | ADMIN    |
-| `customer@shop.local` | CUSTOMER |
+| Email                 | Role     | Description                                      |
+| --------------------- | -------- | ------------------------------------------------ |
+| `admin@shop.local`    | ADMIN    | Full access to /admin, products, orders, refunds |
+| `customer@shop.local` | CUSTOMER | Access to customer storefront, cart, my orders   |
+
+To seed or refresh these accounts in your connected Supabase Auth database:
+
+```bash
+pnpm db:seed:admin    # runs scripts/seed-admin.ts against Supabase
+```
+
+### Stripe CLI Webhook Forwarder (Local Testing)
+
+To test Stripe payment confirmations, cancellations, and refunds locally:
+
+```bash
+# Forward Stripe webhooks to the local API
+stripe listen --forward-to localhost:4000/webhooks/stripe
+
+# Note the printed webhook signing secret (whsec_...) and set:
+# STRIPE_WEBHOOK_SECRET=whsec_... in your .env
+```
+
+To trigger Stripe test events directly from the CLI:
+
+```bash
+stripe trigger payment_intent.succeeded
+stripe trigger checkout.session.completed
+stripe trigger checkout.session.expired
+```
 
 To run the whole thing as it ships, in containers:
 
@@ -375,14 +404,22 @@ first CI job, and a finding blocks the push.
 
 ---
 
-## Not deployed, on purpose
+## Live Production Deployment
 
-This repo is published to GitHub and hosted nowhere. There is no public URL to
-click, and that is a deliberate choice rather than an unfinished step: the code
-is what is being shown, and it reads the same here as it would behind a domain.
+The system is deployed using a production-shaped hybrid topology:
+- **Frontend Surface (`apps/web`):** Deployed to **Vercel** with Next.js 14 App Router, ISR catalog caching, and Next.js edge route protection.
+- **Backend & Concurrency Engine (`apps/api`):** Deployed to **Render** as a Docker container running the NestJS engine, lexicographical lock ordering, and atomic SQL state machine.
+- **Database & Auth:** Hosted on **Supabase** (Postgres with Row Level Security enabled on all 11 tables, and Supabase Auth with server-enforced JWT claims).
+- **Cart & Rate Limiting Cache:** Hosted **Cloud Redis** cluster.
 
-What that does not mean is untested or unrunnable. `docker compose up -d` plus
-`pnpm dev` gives you the whole thing in under a minute, `/health` genuinely
-checks Postgres and Redis and returns 503 when either is down, every service has
-a Dockerfile that CI builds on each push, and the two guarantees above are proven
-by suites you can run yourself in about two minutes.
+### Submission Credentials & Test Evidence
+
+| Role     | Email                 | Password      | Capabilities                                          |
+| :------- | :-------------------- | :------------ | :---------------------------------------------------- |
+| Admin    | `admin@shop.local`    | `password123` | /admin catalog CRUD, inventory adjustments, refunds   |
+| Customer | `customer@shop.local` | `password123` | /orders customer order history, checkout, cart sync   |
+
+### Stripe Test Mode Verification
+* **Success card:** `4242 4242 4242 4242` (any future date, any CVC). The order is confirmed exclusively via the Stripe webhook.
+* **Declined card:** `4000 0000 0000 0002`. The payment fails, the order remains `PENDING` to allow customer retry, and uncompleted holds are released upon TTL expiry.
+* **Replay protection:** Replaying any `checkout.session.completed` or `charge.refunded` event via the Stripe CLI or network replay returns HTTP 200 without double-decrementing or double-restocking.
