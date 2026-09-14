@@ -80,6 +80,7 @@ export default tseslint.config(
       'apps/worker/**/*.ts',
       'packages/db/prisma/**/*.ts',
       'scripts/**/*.mjs',
+      'scripts/**/*.ts',
       '**/*.test.ts',
       'e2e/**/*.ts',
       // The log channel's whole purpose is to print instead of delivering.

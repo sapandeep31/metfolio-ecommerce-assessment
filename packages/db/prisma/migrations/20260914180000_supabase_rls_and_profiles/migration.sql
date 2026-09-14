@@ -1,3 +1,50 @@
+-- ----------------------------------------------------------------------------
+-- Supabase Schema & Role Polyfills for Vanilla PostgreSQL / CI
+-- In Supabase, auth schema, auth.users, auth.uid(), and roles (anon, authenticated)
+-- already exist, so this block safely skips in Supabase and only executes in
+-- vanilla PostgreSQL (e.g. CI test containers or local plain Postgres).
+-- ----------------------------------------------------------------------------
+DO $$
+BEGIN
+  -- 1. Create auth schema if it does not exist
+  IF NOT EXISTS (SELECT 1 FROM pg_namespace WHERE nspname = 'auth') THEN
+    CREATE SCHEMA auth;
+  END IF;
+
+  -- 2. Create stub auth.users table if it does not exist
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'auth' AND table_name = 'users'
+  ) THEN
+    CREATE TABLE auth.users (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      email TEXT,
+      raw_user_meta_data JSONB DEFAULT '{}'::jsonb,
+      raw_app_meta_data JSONB DEFAULT '{}'::jsonb,
+      created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+    );
+  END IF;
+
+  -- 3. Create stub auth.uid() function if it does not exist
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_proc p
+    JOIN pg_namespace n ON p.pronamespace = n.oid
+    WHERE p.proname = 'uid' AND n.nspname = 'auth'
+  ) THEN
+    CREATE FUNCTION auth.uid() RETURNS UUID LANGUAGE sql STABLE AS 'SELECT NULL::UUID';
+  END IF;
+
+  -- 4. Create anon and authenticated roles if they do not exist
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
+    CREATE ROLE anon;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
+    CREATE ROLE authenticated;
+  END IF;
+END
+$$;
+
 -- Create profiles table linked to auth.users
 CREATE TABLE IF NOT EXISTS "profiles" (
     "id" UUID NOT NULL,

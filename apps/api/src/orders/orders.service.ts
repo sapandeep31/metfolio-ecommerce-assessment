@@ -115,7 +115,7 @@ export class OrdersService {
    * Idempotent: if already REFUNDED, returns the order.
    * Guarded on PAID: only PAID orders can transition to REFUNDED.
    */
-  async refund(orderId: string, actorRole: Role, reason?: string): Promise<Order> {
+  async refund(orderId: string, actorRole: Role, _reason?: string): Promise<Order> {
     if (actorRole !== 'ADMIN') throw new ForbiddenException('Admins only');
 
     const row = await this.prisma.order.findUnique({
