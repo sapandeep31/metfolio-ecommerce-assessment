@@ -42,8 +42,8 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Shop',
-  description: 'An e-commerce store with idempotent payments and oversell-proof inventory.',
+  title: 'Metfolio Atelier | Fine Jewelry & Diamonds',
+  description: 'Handcrafted luxury diamond rings, necklaces, earrings, and fine jewelry with real-time stock protection.',
 };
 
 /**

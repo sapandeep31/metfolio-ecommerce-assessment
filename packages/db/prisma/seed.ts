@@ -47,107 +47,125 @@ type SeedProduct = {
 };
 
 const CATEGORIES: Array<{ slug: string; name: string }> = [
-  { slug: 'audio', name: 'Audio' },
-  { slug: 'wearables', name: 'Wearables' },
-  { slug: 'accessories', name: 'Accessories' },
+  { slug: 'necklaces', name: 'Necklaces' },
+  { slug: 'rings', name: 'Rings' },
+  { slug: 'earrings', name: 'Earrings' },
+  { slug: 'bracelets', name: 'Bracelets' },
 ];
 
 const PRODUCTS: SeedProduct[] = [
   {
-    slug: 'ear-one',
-    title: 'Ear One',
+    slug: 'solitaire-diamond-ring',
+    title: 'Solitaire Diamond Ring',
     description:
-      'Transparent in-ear monitors with active noise cancellation and a 36 hour case. ' +
-      'Machined aluminium stems, silicone tips in three sizes.',
-    category: 'audio',
+      'Handcrafted 1.5-carat round brilliant diamond set in a classic four-prong cathedral setting. ' +
+      'Exceptional fire, timeless elegance, and ethically sourced stones.',
+    category: 'rings',
     variants: [
-      { sku: 'EAR1-WHT', name: 'White', priceCents: 14900, stockOnHand: 42 },
-      { sku: 'EAR1-BLK', name: 'Black', priceCents: 14900, stockOnHand: 18 },
+      { sku: 'RING-SOL-18K-6', name: '18k Yellow Gold / Size 6', priceCents: 249000, stockOnHand: 15 },
+      { sku: 'RING-SOL-18K-7', name: '18k Yellow Gold / Size 7', priceCents: 249000, stockOnHand: 20 },
+      { sku: 'RING-SOL-PLT-6', name: 'Platinum / Size 6', priceCents: 289000, stockOnHand: 10 },
+      { sku: 'RING-SOL-PLT-7', name: 'Platinum / Size 7', priceCents: 289000, stockOnHand: 12 },
     ],
   },
   {
-    slug: 'ear-open',
-    title: 'Ear Open',
+    slug: 'eternity-diamond-band',
+    title: 'Eternity Diamond Band',
     description:
-      'Open-ear clips that leave the canal free. Directional drivers keep the sound in and the ' +
-      'street audible.',
-    category: 'audio',
-    variants: [{ sku: 'EARO-WHT', name: 'White', priceCents: 19900, stockOnHand: 7 }],
-  },
-  {
-    slug: 'monitor-speaker',
-    title: 'Monitor Speaker',
-    description:
-      'A single full-range desktop monitor. Class D amplification, USB-C in, 3.5mm in, ' +
-      'no app required.',
-    category: 'audio',
+      'Continuous circle of pavé-set round brilliant diamonds totaling 2.0 carats. ' +
+      'Designed for effortless stacking or a standalone statement of enduring brilliance.',
+    category: 'rings',
     variants: [
-      { sku: 'MON-BLK', name: 'Black', priceCents: 29900, stockOnHand: 11 },
-      { sku: 'MON-GRY', name: 'Grey', priceCents: 29900, stockOnHand: 3 },
+      { sku: 'RING-ETR-WG-6', name: '18k White Gold / Size 6', priceCents: 175000, stockOnHand: 18 },
+      { sku: 'RING-ETR-WG-7', name: '18k White Gold / Size 7', priceCents: 175000, stockOnHand: 14 },
+      { sku: 'RING-ETR-YG-6', name: '18k Yellow Gold / Size 6', priceCents: 175000, stockOnHand: 16 },
     ],
   },
   {
-    slug: 'watch-pro',
-    title: 'Watch Pro',
+    slug: 'diamond-tennis-necklace',
+    title: 'Rivière Diamond Tennis Necklace',
     description:
-      'Aluminium case, always-on transflective display, 14 day battery. Reads notifications, ' +
-      'nothing more.',
-    category: 'wearables',
+      'Graduated rivière necklace featuring 12 carats of ethically sourced round diamonds ' +
+      'set in four-prong 18k white gold articulated links with dual safety clasps.',
+    category: 'necklaces',
     variants: [
-      { sku: 'WPRO-41', name: '41mm', priceCents: 24900, stockOnHand: 25 },
-      { sku: 'WPRO-45', name: '45mm', priceCents: 27900, stockOnHand: 14 },
+      { sku: 'NCK-TEN-16', name: '16-inch / 18k White Gold', priceCents: 420000, stockOnHand: 8 },
+      { sku: 'NCK-TEN-18', name: '18-inch / 18k White Gold', priceCents: 480000, stockOnHand: 6 },
     ],
   },
   {
-    slug: 'band-woven',
-    title: 'Woven Band',
-    description: 'Recycled polyester band with a stainless clasp. Fits every Watch case size.',
-    category: 'wearables',
+    slug: 'akoya-pearl-strand',
+    title: 'Akoya Cultured Pearl Strand',
+    description:
+      'Luminous 7.5-8.0mm Japanese Akoya cultured pearls, individually hand-knotted on pure silk ' +
+      'thread with a filigree 14k yellow gold safety ball clasp.',
+    category: 'necklaces',
     variants: [
-      { sku: 'BAND-RED', name: 'Red', priceCents: 4900, stockOnHand: 60 },
-      { sku: 'BAND-BLK', name: 'Black', priceCents: 4900, stockOnHand: 55 },
+      { sku: 'NCK-PRL-18', name: '18-inch Princess Length', priceCents: 125000, stockOnHand: 22 },
+      { sku: 'NCK-PRL-20', name: '20-inch Matinee Length', priceCents: 145000, stockOnHand: 15 },
     ],
   },
   {
-    slug: 'cable-usbc',
-    title: 'USB-C Cable',
-    description: 'Braided 240W USB-C cable, 1.5m, with an inline power indicator.',
-    category: 'accessories',
-    variants: [{ sku: 'CBL-150', name: '1.5m', priceCents: 2900, stockOnHand: 120 }],
+    slug: 'emerald-cut-pendant',
+    title: 'Emerald Cut Diamond Pendant',
+    description:
+      'A striking 1.2-carat emerald-cut diamond suspended from a delicate 18k gold cable chain ' +
+      'with adjustable jump rings at 16, 17, and 18 inches.',
+    category: 'necklaces',
+    variants: [
+      { sku: 'NCK-EM-YG', name: '18k Yellow Gold', priceCents: 189000, stockOnHand: 25 },
+      { sku: 'NCK-EM-PLT', name: 'Platinum', priceCents: 215000, stockOnHand: 12 },
+    ],
   },
   {
-    slug: 'power-brick',
-    title: 'Power Brick',
-    description: 'A 65W GaN charger with two USB-C ports and folding pins.',
-    category: 'accessories',
-    variants: [{ sku: 'PWR-65', name: '65W', priceCents: 5900, stockOnHand: 34 }],
+    slug: 'diamond-solitaire-studs',
+    title: 'Diamond Solitaire Stud Earrings',
+    description:
+      'Classic matching pair of round brilliant diamonds set in minimalist three-prong martini mounts ' +
+      'with threaded screw-back closures for ultimate comfort and security.',
+    category: 'earrings',
+    variants: [
+      { sku: 'EAR-SOL-1CT', name: '1.0 Total Carat Weight (14k White Gold)', priceCents: 110000, stockOnHand: 30 },
+      { sku: 'EAR-SOL-2CT', name: '2.0 Total Carat Weight (Platinum)', priceCents: 260000, stockOnHand: 15 },
+    ],
   },
   {
-    // Deliberately DRAFT: the storefront must never show it, and an integration
-    // test asserts exactly that.
-    slug: 'phone-three',
-    title: 'Phone Three',
-    description: 'Unannounced. Present in the database so draft filtering has something to hide.',
-    category: 'accessories',
+    slug: 'pave-diamond-huggie-hoops',
+    title: 'Pavé Diamond Huggie Hoops',
+    description:
+      'Petite 12mm huggie hoops encrusted with micro-pavé diamonds along the outer curve. ' +
+      'Crafted for daily wear with seamless hinge and click-lock fastening.',
+    category: 'earrings',
+    variants: [
+      { sku: 'EAR-HUG-YG', name: '14k Yellow Gold', priceCents: 65000, stockOnHand: 40 },
+      { sku: 'EAR-HUG-RG', name: '14k Rose Gold', priceCents: 65000, stockOnHand: 25 },
+      { sku: 'EAR-HUG-WG', name: '14k White Gold', priceCents: 65000, stockOnHand: 35 },
+    ],
+  },
+  {
+    slug: 'diamond-tennis-bracelet',
+    title: 'Classic Diamond Tennis Bracelet',
+    description:
+      'Articulated line of matched round brilliant diamonds totaling 5.0 carats, crafted in solid ' +
+      '18k white gold with double figure-eight safety catches.',
+    category: 'bracelets',
+    variants: [
+      { sku: 'BRC-TEN-7', name: '7-inch / 18k White Gold', priceCents: 310000, stockOnHand: 12 },
+      { sku: 'BRC-TEN-75', name: '7.5-inch / 18k White Gold', priceCents: 335000, stockOnHand: 10 },
+    ],
+  },
+  {
+    slug: 'royale-sapphire-choker',
+    title: 'Royale Sapphire Choker',
+    description: 'Exclusive unreleased atelier piece featuring royal blue Ceylon sapphires and baguette diamonds.',
+    category: 'necklaces',
     status: ProductStatus.DRAFT,
-    variants: [{ sku: 'PH3-256', name: '256GB', priceCents: 79900, stockOnHand: 0 }],
+    variants: [{ sku: 'NCK-SAP-DFT', name: 'Atelier Sample', priceCents: 990000, stockOnHand: 0 }],
   },
 ];
 
 /**
  * Remove every product this file does not define, and everything hanging off it.
- *
- * The E2E suite creates products (`e2e-widget-<timestamp>`) and never removes
- * them, so without this they accumulate on every run until the admin screens are
- * mostly test debris. Upserting the seed set alone does not fix that: it can
- * only add and update, never delete, so the "clean slate" this file promises was
- * not true.
- *
- * Deletion order is dictated by the foreign keys. `OrderItem.variantId` is
- * `onDelete: Restrict`, so a variant that was ever ordered cannot be dropped
- * while the order exists. Deleting the order first cascades its items and
- * payments and nulls the ledger's `orderId`; deleting the product then cascades
- * its variants, images and their ledger rows.
  */
 async function pruneNonSeedProducts(): Promise<number> {
   const doomed = await prisma.product.findMany({
@@ -168,8 +186,6 @@ async function pruneNonSeedProducts(): Promise<number> {
     ).map((item) => item.orderId);
 
     if (orderIds.length > 0) {
-      // WebhookEvent.orderId is a plain column with no foreign key, so its rows
-      // would otherwise point at orders that no longer exist.
       await prisma.webhookEvent.deleteMany({ where: { orderId: { in: orderIds } } });
       await prisma.order.deleteMany({ where: { id: { in: orderIds } } });
     }
@@ -179,10 +195,25 @@ async function pruneNonSeedProducts(): Promise<number> {
   return doomed.length;
 }
 
+async function pruneNonSeedCategories(): Promise<number> {
+  const doomed = await prisma.category.findMany({
+    where: { slug: { notIn: CATEGORIES.map((c) => c.slug) } },
+    select: { id: true },
+  });
+  if (doomed.length === 0) return 0;
+  await prisma.category.deleteMany({ where: { id: { in: doomed.map((c) => c.id) } } });
+  return doomed.length;
+}
+
 async function main() {
-  const pruned = await pruneNonSeedProducts();
-  if (pruned > 0) {
-    console.log(`Pruned ${pruned} product(s) left behind by earlier test runs.`);
+  const prunedProducts = await pruneNonSeedProducts();
+  if (prunedProducts > 0) {
+    console.log(`Pruned ${prunedProducts} non-jewelry product(s).`);
+  }
+
+  const prunedCategories = await pruneNonSeedCategories();
+  if (prunedCategories > 0) {
+    console.log(`Pruned ${prunedCategories} non-jewelry category/categories.`);
   }
 
   const admin = await prisma.user.upsert({
@@ -239,9 +270,7 @@ async function main() {
     });
 
     for (const [position, variant] of product.variants.entries()) {
-      // stockReserved is reset to 0 alongside stockOnHand: a re-seed is a clean
-      // slate, not a merge with whatever reservations a previous run left behind.
-      await prisma.productVariant.upsert({
+      const variantRow = await prisma.productVariant.upsert({
         where: { sku: variant.sku },
         update: {
           productId: row.id,
@@ -261,6 +290,21 @@ async function main() {
           position,
         },
       });
+
+      // Clear existing ledger entries for this variant and record initial RESTOCK
+      await prisma.stockLedger.deleteMany({ where: { variantId: variantRow.id } });
+      if (variant.stockOnHand > 0) {
+        await prisma.stockLedger.create({
+          data: {
+            variantId: variantRow.id,
+            kind: 'RESTOCK',
+            onHandDelta: variant.stockOnHand,
+            reservedDelta: 0,
+            reason: 'Initial luxury jewelry catalog stock',
+            actorId: admin.id,
+          },
+        });
+      }
     }
   }
 

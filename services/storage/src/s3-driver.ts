@@ -74,6 +74,7 @@ export function createS3Driver(options: S3DriverOptions): StorageDriver {
     },
 
     urlFor(key: string) {
+      if (key.startsWith('http://') || key.startsWith('https://')) return key;
       assertSafeKey(key);
       return `${publicUrl}/${key}`;
     },

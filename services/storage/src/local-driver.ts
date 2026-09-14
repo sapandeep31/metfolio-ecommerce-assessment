@@ -57,6 +57,7 @@ export function createLocalDriver(options: LocalDriverOptions): StorageDriver {
     },
 
     urlFor(key: string) {
+      if (key.startsWith('http://') || key.startsWith('https://')) return key;
       assertSafeKey(key);
       return `${publicUrl}/${key}`;
     },

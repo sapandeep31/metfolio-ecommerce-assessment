@@ -38,15 +38,14 @@ export default async function HomePage() {
   return (
     <main className="container-wide">
       <section className="hero">
-        <h1>Hardware, sold correctly</h1>
+        <h1>Handcrafted Fine Jewelry & Timeless Luxury</h1>
         <p>
-          A storefront built around two guarantees: a payment webhook can be delivered ten times and
-          the order is still charged once, and the last unit in stock can be raced by twenty buyers
-          and exactly one of them gets it.
+          Exquisite diamond rings, Rivière necklaces, cultured pearls, and solid gold essentials.
+          Every piece is master-crafted, ethically sourced, and guaranteed in real-time inventory.
         </p>
         <div className="row" style={{ marginTop: 24 }}>
           <Link href="/products" className="btn btn-primary">
-            Browse the catalog
+            Explore the Collection
           </Link>
         </div>
       </section>
