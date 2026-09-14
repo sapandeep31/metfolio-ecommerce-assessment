@@ -72,6 +72,30 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </div>
           <p className="muted">{product.description}</p>
           <AddToCart variants={product.variants} slug={product.slug} />
+
+          <div className="product-trust-matrix">
+            <div className="trust-item">
+              <span className="trust-icon">⚜</span>
+              <div>
+                <strong>Atelier Authenticity Certificate</strong>
+                <p>Individually numbered certificate detailing gemstone origin, carat weight, and noble metal hallmark.</p>
+              </div>
+            </div>
+            <div className="trust-item">
+              <span className="trust-icon">✦</span>
+              <div>
+                <strong>Complimentary Insured Courier</strong>
+                <p>Discreet, fully insured armored express delivery with signature confirmation worldwide.</p>
+              </div>
+            </div>
+            <div className="trust-item">
+              <span className="trust-icon">◈</span>
+              <div>
+                <strong>Lifetime Care & Cleaning</strong>
+                <p>Complimentary prong inspection, annual ultrasonic cleaning, and rhodium replenishment at any flagship salon.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </main>

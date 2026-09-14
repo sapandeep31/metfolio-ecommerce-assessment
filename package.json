@@ -19,6 +19,7 @@
     "db:deploy": "pnpm --filter @shop/db migrate:deploy",
     "db:seed": "pnpm --filter @shop/db seed",
     "db:seed:admin": "tsx --env-file=.env scripts/seed-admin.ts",
+    "db:seed:images": "tsx --env-file=.env scripts/upload-product-images.ts",
     "format": "prettier --write \"**/*.{ts,tsx,js,cjs,mjs,json,md}\"",
     "scan:secrets": "gitleaks detect --no-banner --redact --config .gitleaks.toml",
     "prepare": "node scripts/install-hooks.mjs"

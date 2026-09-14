@@ -62,8 +62,18 @@ const PRODUCTS: SeedProduct[] = [
       'Exceptional fire, timeless elegance, and ethically sourced stones.',
     category: 'rings',
     variants: [
-      { sku: 'RING-SOL-18K-6', name: '18k Yellow Gold / Size 6', priceCents: 249000, stockOnHand: 15 },
-      { sku: 'RING-SOL-18K-7', name: '18k Yellow Gold / Size 7', priceCents: 249000, stockOnHand: 20 },
+      {
+        sku: 'RING-SOL-18K-6',
+        name: '18k Yellow Gold / Size 6',
+        priceCents: 249000,
+        stockOnHand: 15,
+      },
+      {
+        sku: 'RING-SOL-18K-7',
+        name: '18k Yellow Gold / Size 7',
+        priceCents: 249000,
+        stockOnHand: 20,
+      },
       { sku: 'RING-SOL-PLT-6', name: 'Platinum / Size 6', priceCents: 289000, stockOnHand: 10 },
       { sku: 'RING-SOL-PLT-7', name: 'Platinum / Size 7', priceCents: 289000, stockOnHand: 12 },
     ],
@@ -76,9 +86,24 @@ const PRODUCTS: SeedProduct[] = [
       'Designed for effortless stacking or a standalone statement of enduring brilliance.',
     category: 'rings',
     variants: [
-      { sku: 'RING-ETR-WG-6', name: '18k White Gold / Size 6', priceCents: 175000, stockOnHand: 18 },
-      { sku: 'RING-ETR-WG-7', name: '18k White Gold / Size 7', priceCents: 175000, stockOnHand: 14 },
-      { sku: 'RING-ETR-YG-6', name: '18k Yellow Gold / Size 6', priceCents: 175000, stockOnHand: 16 },
+      {
+        sku: 'RING-ETR-WG-6',
+        name: '18k White Gold / Size 6',
+        priceCents: 175000,
+        stockOnHand: 18,
+      },
+      {
+        sku: 'RING-ETR-WG-7',
+        name: '18k White Gold / Size 7',
+        priceCents: 175000,
+        stockOnHand: 14,
+      },
+      {
+        sku: 'RING-ETR-YG-6',
+        name: '18k Yellow Gold / Size 6',
+        priceCents: 175000,
+        stockOnHand: 16,
+      },
     ],
   },
   {
@@ -125,8 +150,18 @@ const PRODUCTS: SeedProduct[] = [
       'with threaded screw-back closures for ultimate comfort and security.',
     category: 'earrings',
     variants: [
-      { sku: 'EAR-SOL-1CT', name: '1.0 Total Carat Weight (14k White Gold)', priceCents: 110000, stockOnHand: 30 },
-      { sku: 'EAR-SOL-2CT', name: '2.0 Total Carat Weight (Platinum)', priceCents: 260000, stockOnHand: 15 },
+      {
+        sku: 'EAR-SOL-1CT',
+        name: '1.0 Total Carat Weight (14k White Gold)',
+        priceCents: 110000,
+        stockOnHand: 30,
+      },
+      {
+        sku: 'EAR-SOL-2CT',
+        name: '2.0 Total Carat Weight (Platinum)',
+        priceCents: 260000,
+        stockOnHand: 15,
+      },
     ],
   },
   {
@@ -157,7 +192,8 @@ const PRODUCTS: SeedProduct[] = [
   {
     slug: 'royale-sapphire-choker',
     title: 'Royale Sapphire Choker',
-    description: 'Exclusive unreleased atelier piece featuring royal blue Ceylon sapphires and baguette diamonds.',
+    description:
+      'Exclusive unreleased atelier piece featuring royal blue Ceylon sapphires and baguette diamonds.',
     category: 'necklaces',
     status: ProductStatus.DRAFT,
     variants: [{ sku: 'NCK-SAP-DFT', name: 'Atelier Sample', priceCents: 990000, stockOnHand: 0 }],
@@ -268,6 +304,21 @@ async function main() {
         categoryId,
       },
     });
+
+    const imageUrl = `https://stwurhtrxmwjgpeiycjo.supabase.co/storage/v1/object/public/product-images/${product.slug}/hero.webp`;
+    const existingImage = await prisma.productImage.findFirst({
+      where: { productId: row.id },
+    });
+    if (!existingImage) {
+      await prisma.productImage.create({
+        data: {
+          productId: row.id,
+          storageKey: imageUrl,
+          alt: product.title,
+          position: 0,
+        },
+      });
+    }
 
     for (const [position, variant] of product.variants.entries()) {
       const variantRow = await prisma.productVariant.upsert({

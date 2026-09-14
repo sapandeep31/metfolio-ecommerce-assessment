@@ -23,8 +23,8 @@ test-results/
 # local-only (never published)
 docs/
 
-# uploaded media (local storage driver)
-var/uploads/
+# uploaded media & temporary conversion cache
+var/
 
 # logs
 *.log

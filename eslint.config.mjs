@@ -17,6 +17,7 @@ export default tseslint.config(
       '**/coverage/**',
       '**/playwright-report/**',
       '**/test-results/**',
+      '**/.vercel/**',
       // Prisma's client. Machine-written, replaced on every `db:generate`, and
       // not something a lint rule has any business having an opinion about.
       'packages/db/generated/**',

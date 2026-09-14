@@ -77,7 +77,7 @@ export default async function ProductsPage({
               id="q"
               name="q"
               defaultValue={query.q ?? ''}
-              placeholder="noise cancellation"
+              placeholder="Search diamonds, rings, tennis necklaces..."
               data-testid="search-input"
             />
             {query.category && <input type="hidden" name="category" value={query.category} />}

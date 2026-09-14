@@ -20,9 +20,6 @@ interface NavState {
  * rendering of every page in the app, which would quietly cancel the ISR on the
  * home and product pages. Fetching that state from /api/nav-state keeps the
  * layout static and confines the dynamic read to one route handler.
- *
- * The trade is a brief render with no cart count on first paint. That is worth
- * far less than statically served catalog pages.
  */
 export function Nav() {
   const [state, setState] = useState<NavState | null>(null);
@@ -44,46 +41,66 @@ export function Nav() {
   const count = state?.cartCount ?? 0;
 
   return (
-    <nav className="nav" aria-label="Primary">
-      <Link href="/" className="brand">
-        Shop
-      </Link>
-      <div className="links">
-        <Link href="/products">Catalog</Link>
-        {state?.isAdmin && <Link href="/admin">Admin</Link>}
-        {state?.signedIn ? (
-          <>
-            <Link href="/orders">Orders</Link>
-            <form action={signoutAction} style={{ display: 'inline' }}>
-              <button
-                type="submit"
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'inherit',
-                  font: 'inherit',
-                  cursor: 'pointer',
-                  padding: 0,
-                  fontSize: '0.9rem',
-                }}
-              >
-                Sign out
-              </button>
-            </form>
-          </>
-        ) : (
-          <Link href="/login">Sign in</Link>
-        )}
-        <Link href="/cart" data-testid="cart-link">
-          Cart
-          <span data-testid="cart-count" className="cart-count">
-            {count > 0 ? ` (${count})` : ''}
+    <header className="nav-wrapper">
+      <nav className="nav nav-luxury" aria-label="Primary">
+        <Link href="/" className="brand brand-luxury">
+          <span className="brand-crest" aria-hidden="true">⚜</span>
+          <span className="brand-text">
+            <span className="brand-name">METFOLIO</span>
+            <span className="brand-sub">ATELIER · HAUTE JOAILLERIE</span>
           </span>
-          {count > 0 && (
-            <span className="sr-only">{count === 1 ? '1 item' : `${count} items`}</span>
-          )}
         </Link>
-      </div>
-    </nav>
+
+        <div className="nav-center-links">
+          <Link href="/products" className={pathname === '/products' ? 'active' : ''}>
+            Catalog
+          </Link>
+          <Link href="/products?category=necklaces">Necklaces</Link>
+          <Link href="/products?category=rings">Rings</Link>
+          <Link href="/products?category=earrings">Earrings</Link>
+          <Link href="/products?category=bracelets">Bracelets</Link>
+        </div>
+
+        <div className="links nav-actions">
+          {state?.isAdmin && (
+            <Link href="/admin" className="admin-link-pill">
+              Admin
+            </Link>
+          )}
+
+          {state?.signedIn ? (
+            <>
+              <Link href="/orders" className="orders-link">
+                Orders
+              </Link>
+              <form action={signoutAction} style={{ display: 'inline' }}>
+                <button
+                  type="submit"
+                  className="nav-action-btn"
+                  title="Sign out of your atelier account"
+                >
+                  Sign out
+                </button>
+              </form>
+            </>
+          ) : (
+            <Link href="/login" className="login-link">
+              Sign in
+            </Link>
+          )}
+
+          <Link href="/cart" data-testid="cart-link" className="cart-badge-link">
+            <span className="cart-icon" aria-hidden="true">✦</span>
+            <span className="cart-label">Bag</span>
+            <span data-testid="cart-count" className="cart-count">
+              {count > 0 ? ` (${count})` : ''}
+            </span>
+            {count > 0 && (
+              <span className="sr-only">{count === 1 ? '1 item' : `${count} items`}</span>
+            )}
+          </Link>
+        </div>
+      </nav>
+    </header>
   );
 }
