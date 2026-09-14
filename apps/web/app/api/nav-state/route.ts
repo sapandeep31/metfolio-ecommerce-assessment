@@ -1,6 +1,6 @@
 import type { Cart } from '@shop/shared';
 import { NextResponse } from 'next/server';
-import { createClient } from '../../../lib/supabase/server';
+import { auth } from '../../../auth';
 import { cartApiFetch, getCartId } from '../../../lib/api';
 
 /**
@@ -9,20 +9,9 @@ import { cartApiFetch, getCartId } from '../../../lib/api';
 export const dynamic = 'force-dynamic';
 
 export async function GET(): Promise<NextResponse> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  let isAdmin = user?.app_metadata?.role === 'admin';
-  if (!isAdmin && user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
-    isAdmin = profile?.role === 'admin';
-  }
+  const session = await auth();
+  const user = session?.user;
+  const isAdmin = user?.role === 'ADMIN';
 
   let cartCount = 0;
   const cartId = await getCartId(false);
