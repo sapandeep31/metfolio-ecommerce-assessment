@@ -55,10 +55,16 @@ check_reachable() {
   fi
   host="${BASH_REMATCH[2]}"
   port="${BASH_REMATCH[3]}"
-  if ! (exec 3<>"/dev/tcp/${host}/${port}") 2>/dev/null; then
-    echo "${label} is not reachable at ${host}:${port}. Start the datastores:" >&2
-    echo "  docker compose -f infra/docker-compose.yml up -d" >&2
-    return 1
+  if command -v nc >/dev/null 2>&1; then
+    if ! nc -z -w 3 "${host}" "${port}" >/dev/null 2>&1; then
+      echo "${label} is not reachable at ${host}:${port}." >&2
+      return 1
+    fi
+  else
+    if ! node -e "const net = require('net'); const s = net.createConnection({ host: '${host}', port: ${port}, timeout: 3000 }, () => { s.destroy(); process.exit(0); }); s.on('error', () => process.exit(1)); s.on('timeout', () => process.exit(1));" >/dev/null 2>&1; then
+      echo "${label} is not reachable at ${host}:${port}." >&2
+      return 1
+    fi
   fi
 }
 
