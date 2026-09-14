@@ -73,7 +73,8 @@ export class CheckoutService {
     // customer and stock they want. It never throws.
     await this.sweep.sweepQuietly();
 
-    const expiresAt = new Date(Date.now() + this.config.reservationTtlMinutes * 60_000);
+    const effectiveMinutes = Math.max(35, this.config.reservationTtlMinutes);
+    const expiresAt = new Date(Date.now() + effectiveMinutes * 60_000);
     const stockLines: StockLine[] = cart.lines.map((line) => ({
       variantId: line.variantId,
       quantity: line.quantity,
