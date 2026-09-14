@@ -16,16 +16,16 @@ test.describe('guest shopping flow', () => {
     expect(all).toBeGreaterThan(2);
 
     // Full-text search, served by the GIN index through websearch_to_tsquery.
-    await page.getByTestId('search-input').fill('noise cancellation');
+    await page.getByTestId('search-input').fill('emerald');
     await page.getByRole('button', { name: /apply/i }).click();
     await expect(page.getByTestId('product-card')).toHaveCount(1);
-    await expect(page.getByTestId('product-card').first()).toHaveAttribute('data-slug', 'ear-one');
+    await expect(page.getByTestId('product-card').first()).toHaveAttribute('data-slug', 'emerald-cut-pendant');
 
     // A category filter narrows without erroring.
-    await page.goto('/products?category=audio');
-    const audio = await page.getByTestId('product-card').count();
-    expect(audio).toBeGreaterThan(0);
-    expect(audio).toBeLessThan(all);
+    await page.goto('/products?category=rings');
+    const rings = await page.getByTestId('product-card').count();
+    expect(rings).toBeGreaterThan(0);
+    expect(rings).toBeLessThan(all);
   });
 
   test('a query that matches nothing shows an empty state, not an error', async ({ page }) => {
@@ -34,16 +34,16 @@ test.describe('guest shopping flow', () => {
   });
 
   test('a draft product is not reachable from the storefront', async ({ page }) => {
-    // phone-three is seeded as DRAFT precisely so this has something to check.
-    const response = await page.goto('/products/phone-three');
+    // royale-sapphire-choker is seeded as DRAFT precisely so this has something to check.
+    const response = await page.goto('/products/royale-sapphire-choker');
     expect(response?.status()).toBe(404);
   });
 
   test('buys an item end to end and the stock drops by what was bought', async ({ page }) => {
-    const before = await availableStock('cable-usbc', 'CBL-150');
+    const before = await availableStock('diamond-tennis-necklace', 'NCK-TEN-16');
     expect(before).toBeGreaterThan(0);
 
-    await addFirstVariantToCart(page, 'cable-usbc');
+    await addFirstVariantToCart(page, 'diamond-tennis-necklace');
 
     await page.goto('/cart');
     await expect(page.getByTestId('cart-line')).toHaveCount(1);
@@ -62,7 +62,7 @@ test.describe('guest shopping flow', () => {
     await expect(page.getByTestId('mock-amount')).toHaveText(total!);
 
     // Stock is reserved but not yet shipped: available has dropped, on-hand has not.
-    expect(await availableStock('cable-usbc', 'CBL-150')).toBe(before - 1);
+    expect(await availableStock('diamond-tennis-necklace', 'NCK-TEN-16')).toBe(before - 1);
 
     await page.getByTestId('mock-approve').click();
 
@@ -74,11 +74,11 @@ test.describe('guest shopping flow', () => {
     await expect(page.getByTestId('order-total')).toHaveText(total!);
 
     // Fulfilment consumed the reservation rather than adding a second decrement.
-    expect(await availableStock('cable-usbc', 'CBL-150')).toBe(before - 1);
+    expect(await availableStock('diamond-tennis-necklace', 'NCK-TEN-16')).toBe(before - 1);
   });
 
   test('a declined payment leaves the order unpaid', async ({ page }) => {
-    await addFirstVariantToCart(page, 'power-brick');
+    await addFirstVariantToCart(page, 'emerald-cut-pendant');
     await fillCheckout(page, 'declined@example.com');
     await page.waitForURL(/\/mock-checkout\//, { timeout: 20_000 });
 
@@ -93,7 +93,7 @@ test.describe('guest shopping flow', () => {
   });
 
   test('cart quantities can be changed and lines removed', async ({ page }) => {
-    await addFirstVariantToCart(page, 'band-woven');
+    await addFirstVariantToCart(page, 'eternity-diamond-band');
     await page.goto('/cart');
 
     await page.getByLabel('Increase quantity').click();
@@ -107,7 +107,7 @@ test.describe('guest shopping flow', () => {
   });
 
   test('the cart survives a reload, because it lives in Redis not in memory', async ({ page }) => {
-    await addFirstVariantToCart(page, 'cable-usbc');
+    await addFirstVariantToCart(page, 'diamond-tennis-necklace');
     await page.goto('/cart');
     await expect(page.getByTestId('cart-line')).toHaveCount(1);
 

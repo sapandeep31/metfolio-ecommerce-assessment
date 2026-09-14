@@ -201,11 +201,14 @@ export class CheckoutService {
     } catch (error) {
       // The gateway is down or rejected us. Release immediately rather than
       // leaving stock held for the full TTL behind an order nobody can pay.
-      this.logger.error(
-        `Gateway session failed for ${created.number}: ${error instanceof Error ? error.message : String(error)}`,
-      );
+      const reason = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Gateway session failed for ${created.number}: ${reason}`);
       await this.cancelAndRelease(created.id, 'gateway-session-failed');
-      throw new BadRequestException('Could not start checkout. Please try again.');
+      throw new BadRequestException(
+        reason.includes('http') || reason.includes('account') || reason.includes('Stripe')
+          ? `Checkout gateway error: ${reason}`
+          : 'Could not start checkout. Please try again.',
+      );
     }
 
     // Phase 3: record the payment attempt.

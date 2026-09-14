@@ -23,6 +23,7 @@ interface NavState {
  */
 export function Nav() {
   const [state, setState] = useState<NavState | null>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -38,10 +39,25 @@ export function Nav() {
     };
   }, [pathname]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40);
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const isHome = pathname === '/';
+  const isTransparent = isHome && !isScrolled;
   const count = state?.cartCount ?? 0;
 
   return (
-    <header className="nav-wrapper">
+    <header
+      className={`nav-wrapper ${isHome ? 'nav-wrapper-home' : ''} ${
+        isTransparent ? 'nav-transparent' : 'nav-scrolled'
+      }`}
+    >
       <nav className="nav nav-luxury" aria-label="Primary">
         <Link href="/" className="brand brand-luxury">
           <span className="brand-crest" aria-hidden="true">⚜</span>
