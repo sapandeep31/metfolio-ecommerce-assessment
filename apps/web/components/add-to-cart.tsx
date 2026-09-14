@@ -62,7 +62,10 @@ export function AddToCart({
     startTransition(async () => {
       const result = await addToCart(variant.id, Math.min(quantity, max));
       if (result.error) setError(result.error);
-      else router.refresh();
+      else {
+        window.dispatchEvent(new Event('cart-updated'));
+        router.refresh();
+      }
     });
   }
 

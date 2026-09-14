@@ -28,14 +28,22 @@ export function Nav() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/nav-state', { cache: 'no-store' })
-      .then((response) => (response.ok ? response.json() : null))
-      .then((body: NavState | null) => {
-        if (!cancelled && body) setState(body);
-      })
-      .catch(() => undefined);
+
+    const refreshNavState = () => {
+      fetch('/api/nav-state', { cache: 'no-store' })
+        .then((response) => (response.ok ? response.json() : null))
+        .then((body: NavState | null) => {
+          if (!cancelled && body) setState(body);
+        })
+        .catch(() => undefined);
+    };
+
+    refreshNavState();
+    window.addEventListener('cart-updated', refreshNavState);
+
     return () => {
       cancelled = true;
+      window.removeEventListener('cart-updated', refreshNavState);
     };
   }, [pathname]);
 

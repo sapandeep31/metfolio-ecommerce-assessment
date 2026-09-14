@@ -26,6 +26,7 @@ export function CartLineControls({
     startTransition(async () => {
       if (next <= 0) await removeFromCart(variantId);
       else await setCartQuantity(variantId, Math.min(next, Math.max(max, 1)));
+      window.dispatchEvent(new Event('cart-updated'));
       router.refresh();
     });
   }
