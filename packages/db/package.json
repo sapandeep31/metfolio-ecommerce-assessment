@@ -17,12 +17,12 @@
     "migrate:deploy": "prisma migrate deploy",
     "migrate:diff": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script",
     "studio": "prisma studio",
-    "seed": "tsx prisma/seed.ts",
+    "seed": "tsx --env-file=../../.env prisma/seed.ts",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx --env-file=../../.env prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0"
