@@ -1510,7 +1510,7 @@ td.num {
 
 /* ---- Secondary Section: Product Rail (Atelier Vault Marquee) ---- */
 .product-rail-section {
-  padding: var(--s-16) 0 var(--s-12);
+  padding: clamp(28px, 4vh, 42px) 0 clamp(20px, 3vh, 32px);
   background: radial-gradient(circle at 50% 0%, #191410 0%, #0d0b09 60%, #080706 100%);
   border-top: 1px solid rgba(212, 175, 55, 0.2);
   border-bottom: 1px solid rgba(212, 175, 55, 0.2);
@@ -1519,20 +1519,19 @@ td.num {
 }
 
 .product-rail-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  margin-bottom: var(--s-10);
-  gap: var(--s-6);
-}
-
-.product-rail-header-text {
+  text-align: center;
+  margin: 0 auto clamp(12px, 2vh, 18px);
   max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
 .product-rail-eyebrow {
   font-family: var(--ff-ui);
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.24em;
   color: #e5c365;
   text-transform: uppercase;
@@ -1549,130 +1548,28 @@ td.num {
 
 .product-rail-title {
   font-family: var(--ff-display);
-  font-size: clamp(34px, 4.5vw, 56px);
+  font-size: clamp(26px, 3.2vw, 38px);
   color: #fffdfa;
-  margin: 8px 0;
+  margin: 0;
   letter-spacing: -0.01em;
   font-weight: 400;
-  line-height: 1.1;
+  line-height: 1.15;
 }
 
 .product-rail-subtitle {
   font-family: var(--ff-ui);
-  font-size: 15px;
-  color: #b8ac9c;
-  max-width: 600px;
+  font-size: clamp(12px, 1.3vw, 14px);
+  color: #a89d8f;
+  max-width: 540px;
   margin: 0;
-  line-height: 1.6;
-}
-
-.product-rail-controls-group {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 12px;
-}
-
-/* Live Stream Status Pill */
-.vault-status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  background: rgba(22, 18, 14, 0.9);
-  border: 1px solid rgba(212, 175, 55, 0.25);
-  border-radius: 999px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition: all var(--motion-base) var(--ease);
-}
-
-.vault-status-indicator {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  transition: all var(--motion-base) var(--ease);
-}
-
-.vault-status-pill.is-streaming .vault-status-indicator {
-  background: #5fd08a;
-  box-shadow: 0 0 8px #5fd08a;
-  animation: vaultPulseDot 2s ease-in-out infinite;
-}
-
-.vault-status-pill.is-paused .vault-status-indicator {
-  background: #d4af37;
-  box-shadow: 0 0 8px #d4af37;
-}
-
-.vault-status-text {
-  font-family: var(--ff-mono);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  color: #e5c365;
-  text-transform: uppercase;
-  font-weight: 500;
-}
-
-@keyframes vaultPulseDot {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.4;
-    transform: scale(0.85);
-  }
-}
-
-.product-rail-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.rail-ctrl-btn {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(212, 175, 55, 0.28);
-  color: #d4af37;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  transition: all var(--motion-fast) var(--ease);
-  backdrop-filter: blur(8px);
-}
-
-.rail-ctrl-btn:hover {
-  background: #d4af37;
-  color: #0b0907;
-  border-color: #d4af37;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.35);
-}
-
-.rail-ctrl-btn.is-active {
-  border-color: rgba(212, 175, 55, 0.8);
-  background: rgba(212, 175, 55, 0.15);
-}
-
-.rail-play-pause-btn {
-  font-size: 12px;
-  font-weight: 700;
-  width: 44px;
-  height: 44px;
-  border-color: rgba(212, 175, 55, 0.45);
+  line-height: 1.45;
 }
 
 /* Edge-vignetted Marquee Viewport */
 .product-rail-marquee-viewport {
   width: 100%;
   overflow: hidden;
-  padding: var(--s-4) 0 var(--s-8);
+  padding: 4px 0 10px;
   position: relative;
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 1) 6%, rgba(0, 0, 0, 1) 94%, transparent 100%);
   mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 1) 6%, rgba(0, 0, 0, 1) 94%, transparent 100%);
@@ -1681,10 +1578,10 @@ td.num {
 /* Marquee Track */
 .product-rail-marquee-track {
   display: flex;
-  gap: var(--s-6);
+  gap: var(--s-5);
   width: max-content;
   will-change: transform;
-  animation: vaultMarquee 48s linear infinite;
+  animation: vaultMarquee 45s linear infinite;
 }
 
 @keyframes vaultMarquee {
@@ -1698,33 +1595,27 @@ td.num {
 
 /* Hover over viewport or any card pauses the stream smoothly */
 .product-rail-marquee-viewport:hover .product-rail-marquee-track,
-.product-rail-marquee-viewport:focus-within .product-rail-marquee-track,
-.product-rail-marquee-track.manual-paused {
+.product-rail-marquee-viewport:focus-within .product-rail-marquee-track {
   animation-play-state: paused !important;
 }
 
-/* Reverse Direction */
-.product-rail-marquee-track.marquee-reverse {
-  animation-direction: reverse;
-}
-
-/* Luxury Rail Card */
+/* Luxury Rail Card - Sized proportionally to fit within 100vh */
 .luxury-rail-card {
-  flex: 0 0 320px;
-  width: 320px;
+  flex: 0 0 clamp(225px, 17vw, 255px);
+  width: clamp(225px, 17vw, 255px);
   background: linear-gradient(180deg, #17130e 0%, #0e0c0a 100%);
   border: 1px solid rgba(212, 175, 55, 0.18);
   border-radius: 4px;
   overflow: hidden;
-  transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1), border-color 0.4s ease, box-shadow 0.4s cubic-bezier(0.2, 0, 0, 1);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: transform 0.35s cubic-bezier(0.2, 0, 0, 1), border-color 0.35s ease, box-shadow 0.35s cubic-bezier(0.2, 0, 0, 1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   position: relative;
 }
 
 .luxury-rail-card:hover {
-  transform: translateY(-8px) scale(1.015);
+  transform: translateY(-6px) scale(1.015);
   border-color: rgba(212, 175, 55, 0.6);
-  box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.85), 0 0 30px -4px rgba(212, 175, 55, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.85), 0 0 24px -4px rgba(212, 175, 55, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .rail-card-link {
@@ -1736,7 +1627,7 @@ td.num {
 .rail-card-media {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1 / 1.1;
   background: #14110e;
   overflow: hidden;
 }
@@ -1772,92 +1663,15 @@ td.num {
   align-items: center;
   justify-content: center;
   font-family: var(--ff-display);
-  font-size: 2rem;
+  font-size: 1.8rem;
   color: #7d705c;
 }
 
-.rail-card-specimen-badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 2;
-  background: rgba(12, 10, 8, 0.88);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(212, 175, 55, 0.25);
-  color: #e5c365;
-  font-family: var(--ff-mono);
-  font-size: 9px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 4px 8px;
-  border-radius: 2px;
-}
-
-.rail-card-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 2;
-  background: rgba(12, 10, 8, 0.88);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(212, 175, 55, 0.25);
-  color: #d4af37;
-  font-family: var(--ff-ui);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 4px 8px;
-  border-radius: 2px;
-}
-
-.rail-card-hover-action {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 3;
-  background: linear-gradient(180deg, transparent 0%, rgba(10, 8, 6, 0.95) 100%);
-  padding: 24px 16px 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform: translateY(100%);
-  opacity: 0;
-  transition: transform 0.35s cubic-bezier(0.2, 0, 0, 1), opacity 0.35s ease;
-}
-
-.rail-card-hover-action span {
-  font-family: var(--ff-ui);
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: #fffdfa;
-  background: rgba(212, 175, 55, 0.22);
-  border: 1px solid rgba(212, 175, 55, 0.55);
-  padding: 6px 16px;
-  border-radius: 999px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition: all 0.2s ease;
-}
-
-.luxury-rail-card:hover .rail-card-hover-action {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-.luxury-rail-card:hover .rail-card-hover-action span:hover {
-  background: #d4af37;
-  color: #0b0907;
-}
-
 .rail-card-body {
-  padding: var(--s-5);
+  padding: 12px 14px 14px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   background: #0f0d0b;
   border-top: 1px solid rgba(212, 175, 55, 0.1);
 }
@@ -1866,25 +1680,25 @@ td.num {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 2px;
 }
 
 .rail-card-sku {
   font-family: var(--ff-mono);
-  font-size: 10px;
+  font-size: 9px;
   color: #9a8f80;
   letter-spacing: 0.08em;
 }
 
 .rail-card-status-dot {
   font-family: var(--ff-mono);
-  font-size: 10px;
+  font-size: 9px;
   color: #78e09f;
   letter-spacing: 0.06em;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   text-transform: uppercase;
 }
 
@@ -1899,12 +1713,15 @@ td.num {
 
 .rail-card-title {
   font-family: var(--ff-display);
-  font-size: 1.35rem;
+  font-size: 1.15rem;
   color: #fffdfa;
-  margin: 4px 0 8px;
+  margin: 2px 0 4px;
   line-height: 1.25;
   font-weight: 400;
   transition: color 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .luxury-rail-card:hover .rail-card-title {
@@ -1916,19 +1733,19 @@ td.num {
   align-items: flex-end;
   justify-content: space-between;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
-  padding-top: 10px;
-  margin-top: 4px;
+  padding-top: 8px;
+  margin-top: 2px;
 }
 
 .rail-card-price-group {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 .rail-card-from-label {
   font-family: var(--ff-mono);
-  font-size: 9px;
+  font-size: 8.5px;
   letter-spacing: 0.1em;
   color: #8a7f72;
   text-transform: uppercase;
@@ -1936,67 +1753,22 @@ td.num {
 
 .rail-card-price {
   font-family: var(--ff-display);
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   color: #d4af37;
   font-weight: 500;
 }
 
 .rail-card-craft-pill {
   font-family: var(--ff-ui);
-  font-size: 10px;
+  font-size: 9.5px;
   color: #aba092;
-  letter-spacing: 0.04em;
-}
-
-.vault-bottom-bar {
-  margin-top: var(--s-6);
-  border-top: 1px solid rgba(212, 175, 55, 0.12);
-  padding-top: var(--s-4);
-}
-
-.vault-stream-info {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--s-4);
-  flex-wrap: wrap;
-}
-
-.vault-stream-hint {
-  font-family: var(--ff-mono);
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  color: #807669;
-  text-transform: uppercase;
-}
-
-.vault-view-all-link {
-  font-family: var(--ff-ui);
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  color: #d4af37;
-  text-transform: uppercase;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.vault-view-all-link:hover {
-  color: #f3e5b8;
-  transform: translateX(3px);
+  letter-spacing: 0.03em;
 }
 
 @media (max-width: 768px) {
-  .product-rail-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .product-rail-controls-group {
-    align-items: flex-start;
-  }
   .luxury-rail-card {
-    flex: 0 0 280px;
-    width: 280px;
+    flex: 0 0 215px;
+    width: 215px;
   }
 }
 

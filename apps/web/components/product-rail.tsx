@@ -2,7 +2,6 @@
 
 import { formatMoney, type Product } from '@shop/shared';
 import Link from 'next/link';
-import { useState } from 'react';
 
 const ARCHIVAL_FALLBACK_SPECIMENS: Product[] = [
   {
@@ -104,91 +103,34 @@ export function ProductRail({
   title?: string;
   subtitle?: string;
 }) {
-  const [isPaused, setIsPaused] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [direction, setDirection] = useState<'normal' | 'reverse'>('normal');
-
   // Fallback to curated specimens if empty catalog or offline fallback
   const activeProducts = products && products.length > 0 ? products : ARCHIVAL_FALLBACK_SPECIMENS;
 
   // Duplicate items for a seamless, continuous infinite marquee loop
   const duplicatedItems = [...activeProducts, ...activeProducts];
 
-  const isStreamPaused = isPaused || isHovered;
-
   return (
     <section id="collection-rail" className="product-rail-section" aria-label="Atelier Vault Collection">
       <div className="container-wide">
         <div className="product-rail-header">
-          <div className="product-rail-header-text">
-            <span className="product-rail-eyebrow">
-              <span className="vault-eyebrow-crest">✦</span> ATELIER HAUTE JOAILLERIE · ARCHIVAL VAULT <span className="vault-eyebrow-crest">✦</span>
-            </span>
-            <h2 className="product-rail-title">{title}</h2>
-            <p className="product-rail-subtitle">{subtitle}</p>
-          </div>
-
-          <div className="product-rail-controls-group">
-            {/* Live Stream Status Pill */}
-            <div className={`vault-status-pill ${isStreamPaused ? 'is-paused' : 'is-streaming'}`}>
-              <span className="vault-status-indicator" aria-hidden="true" />
-              <span className="vault-status-text">
-                {isStreamPaused ? 'VAULT PAUSED · INSPECTING' : 'LIVE VAULT STREAM'}
-              </span>
-            </div>
-
-            {/* Interactive Control Buttons */}
-            <div className="product-rail-controls" aria-label="Marquee stream controls">
-              <button
-                type="button"
-                className={`rail-ctrl-btn ${direction === 'normal' ? 'is-active' : ''}`}
-                onClick={() => setDirection('normal')}
-                title="Scroll Left"
-                aria-label="Scroll stream left"
-              >
-                ←
-              </button>
-              <button
-                type="button"
-                className="rail-ctrl-btn rail-play-pause-btn"
-                onClick={() => setIsPaused((prev) => !prev)}
-                title={isPaused ? 'Resume stream' : 'Pause stream'}
-                aria-label={isPaused ? 'Resume stream' : 'Pause stream'}
-              >
-                {isPaused ? '▶' : '❚❚'}
-              </button>
-              <button
-                type="button"
-                className={`rail-ctrl-btn ${direction === 'reverse' ? 'is-active' : ''}`}
-                onClick={() => setDirection('reverse')}
-                title="Scroll Right"
-                aria-label="Scroll stream right"
-              >
-                →
-              </button>
-            </div>
-          </div>
+          <span className="product-rail-eyebrow">
+            <span className="vault-eyebrow-crest">✦</span> ATELIER HAUTE JOAILLERIE · ARCHIVAL VAULT <span className="vault-eyebrow-crest">✦</span>
+          </span>
+          <h2 className="product-rail-title">{title}</h2>
+          <p className="product-rail-subtitle">{subtitle}</p>
         </div>
       </div>
 
       {/* Edge-vignetted Marquee Viewport */}
       <div
         className="product-rail-marquee-viewport"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
         role="region"
         aria-label="Infinite product showcase, hover to pause"
       >
-        <div
-          className={`product-rail-marquee-track ${isPaused ? 'manual-paused' : ''} ${
-            direction === 'reverse' ? 'marquee-reverse' : ''
-          }`}
-        >
+        <div className="product-rail-marquee-track">
           {duplicatedItems.map((product, index) => {
             const image = product.images[0];
             const primaryVariant = product.variants[0];
-            const specimenNumber = String((index % activeProducts.length) + 1).padStart(2, '0');
-            const totalCount = String(activeProducts.length).padStart(2, '0');
 
             return (
               <article
@@ -196,7 +138,7 @@ export function ProductRail({
                 className="luxury-rail-card"
               >
                 <Link href={`/products/${product.slug}`} className="rail-card-link">
-                  {/* Card Media with Specimen Accents */}
+                  {/* Clean Card Media */}
                   <div className="rail-card-media">
                     {image ? (
                       <img
@@ -211,23 +153,8 @@ export function ProductRail({
                       </div>
                     )}
 
-                    {/* Shimmer Light Reflection Overlay */}
+                    {/* Subtle Shimmer Light Reflection */}
                     <div className="rail-card-shimmer" aria-hidden="true" />
-
-                    {/* Specimen Number Badge */}
-                    <span className="rail-card-specimen-badge">
-                      SPECIMEN Nº {specimenNumber}/{totalCount}
-                    </span>
-
-                    {/* Category Pill */}
-                    <span className="rail-card-badge">
-                      ✦ {product.category?.name ?? 'Atelier'}
-                    </span>
-
-                    {/* Hover Reveal Drawer */}
-                    <div className="rail-card-hover-action" aria-hidden="true">
-                      <span>Inspect Specimen →</span>
-                    </div>
                   </div>
 
                   {/* Card Body */}
@@ -259,18 +186,6 @@ export function ProductRail({
               </article>
             );
           })}
-        </div>
-      </div>
-
-      {/* Subtle Bottom Accent Indicator */}
-      <div className="container-wide vault-bottom-bar">
-        <div className="vault-stream-info">
-          <span className="vault-stream-hint">
-            HOVER OVER ANY SPECIMEN TO FREEZE STREAM · CLICK TO EXPLORE PROVENANCE & CERTIFICATION
-          </span>
-          <Link href="/products" className="vault-view-all-link">
-            View All {activeProducts.length} Archival Creations →
-          </Link>
         </div>
       </div>
     </section>
