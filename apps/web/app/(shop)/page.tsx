@@ -48,19 +48,29 @@ export default async function HomePage() {
           </div>
 
           <div className="category-salon-grid">
-            {categories.map((cat) => (
-              <Link
-                key={cat.id}
-                href={`/products?category=${cat.slug}`}
-                className="category-salon-card"
-              >
-                <div className="category-card-overlay" />
-                <div className="category-card-content">
-                  <span className="category-crest">✦</span>
-                  <h3 className="category-name">{cat.name}</h3>
-                </div>
-              </Link>
-            ))}
+            {categories.map((cat) => {
+              const taglines: Record<string, string> = {
+                bracelets: 'Whispers of gold, wrapped around the wrist like a secret.',
+                earrings: 'Light caught mid-fall — suspended in precious metal.',
+                necklaces: 'A constellation resting against the collarbone.',
+                rings: 'Eternity, distilled into a single, perfect circle.',
+              };
+              const tagline = taglines[cat.slug] ?? 'Where rarity meets reverence.';
+              return (
+                <Link
+                  key={cat.id}
+                  href={`/products?category=${cat.slug}`}
+                  className="category-salon-card"
+                >
+                  <div className="category-card-overlay" />
+                  <div className="category-card-content">
+                    <span className="category-crest">✦</span>
+                    <h3 className="category-name">{cat.name}</h3>
+                    <p className="category-tagline">&ldquo;{tagline}&rdquo;</p>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>

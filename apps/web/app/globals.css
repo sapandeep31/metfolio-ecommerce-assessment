@@ -1801,6 +1801,9 @@ td.num {
   display: flex;
   flex-direction: column;
   min-height: 0;
+  max-width: 1540px;
+  padding-left: var(--s-8);
+  padding-right: var(--s-8);
 }
 
 .curation-header {
@@ -1876,6 +1879,18 @@ td.num {
   font-size: clamp(1.6rem, 2.2vw, 2.4rem);
   color: #fffdfa;
   margin: 0;
+}
+
+.category-tagline {
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: clamp(11px, 0.85vw, 13px);
+  color: #a89d8f;
+  line-height: 1.5;
+  margin: 4px 0 0;
+  max-width: 200px;
+  text-align: center;
+  letter-spacing: 0.01em;
 }
 
 .category-cta {
