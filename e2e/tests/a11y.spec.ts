@@ -78,7 +78,11 @@ const ADMIN_ROUTES: RouteCase[] = [
 const findings: Record<string, unknown> = {};
 
 async function audit(page: Page, route: RouteCase, scheme: Scheme): Promise<void> {
-  await page.goto(route.path);
+  const currentPath = new URL(page.url()).pathname;
+  if (currentPath !== route.path) {
+    await page.goto(route.path, { waitUntil: 'domcontentloaded' });
+  }
+  await page.locator('body').waitFor({ state: 'visible' });
   if (route.prepare) await route.prepare(page);
 
   const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
@@ -125,7 +129,7 @@ test.describe('accessibility', () => {
 
       for (const route of ADMIN_ROUTES) {
         test(`${route.name} has no WCAG violations`, async ({ page }) => {
-          await signIn(page, ADMIN.email, ADMIN.password);
+          await signIn(page, ADMIN.email, ADMIN.password, route.path);
           await audit(page, route, scheme);
         });
       }

@@ -5,17 +5,22 @@ export const API_BASE_URL = process.env.API_BASE_URL ?? 'http://localhost:4000';
 export const ADMIN = { email: 'admin@shop.local', password: 'password123' };
 
 /** Sign in through the real form, so the session cookie is a real one. */
-export async function signIn(page: Page, email: string, password: string): Promise<void> {
-  await page.goto('/login');
+export async function signIn(page: Page, email: string, password: string, next?: string): Promise<void> {
+  const loginUrl = next ? `/login?next=${encodeURIComponent(next)}` : '/login';
+  await page.goto(loginUrl, { waitUntil: 'domcontentloaded' });
   await page.getByTestId('email').fill(email);
   await page.getByTestId('password').fill(password);
   await page.getByRole('button', { name: /log in/i }).click();
-  await page.waitForURL((url) => !url.pathname.startsWith('/login'), { timeout: 15_000 });
+  if (next) {
+    await page.waitForURL((url) => url.pathname === next || url.pathname.endsWith(next), { timeout: 15_000 });
+  } else {
+    await page.waitForURL((url) => !url.pathname.startsWith('/login'), { timeout: 15_000 });
+  }
 }
 
 /** Add one unit of a product's first in-stock variant to the cart. */
 export async function addFirstVariantToCart(page: Page, slug: string): Promise<void> {
-  await page.goto(`/products/${slug}`);
+  await page.goto(`/products/${slug}`, { waitUntil: 'domcontentloaded' });
   const addButton = page.getByTestId('add-to-cart');
   await expect(addButton).toBeEnabled({ timeout: 15_000 });
   await addButton.click();
@@ -25,7 +30,7 @@ export async function addFirstVariantToCart(page: Page, slug: string): Promise<v
 
 /** Fill and submit the checkout form, landing on the gateway page. */
 export async function fillCheckout(page: Page, email: string): Promise<void> {
-  await page.goto('/checkout');
+  await page.goto('/checkout', { waitUntil: 'domcontentloaded' });
   await expect(page.getByTestId('checkout-email')).toBeVisible({ timeout: 15_000 });
   await page.getByTestId('checkout-email').fill(email);
   await page.getByTestId('checkout-name').fill('Ada Lovelace');
