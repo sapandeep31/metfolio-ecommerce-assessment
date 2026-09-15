@@ -1790,17 +1790,23 @@ td.num {
   height: calc(100vh - 72px);
   display: flex;
   flex-direction: column;
-  justify-content: center;
   padding: clamp(16px, 2.5vh, 28px) 0;
   background: #090807;
   box-sizing: border-box;
   overflow: hidden;
 }
 
+.category-curation-section > .container-wide {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .curation-header {
   text-align: center;
   max-width: 600px;
-  margin: 0 auto clamp(16px, 2.5vh, 28px);
+  margin: 0 auto clamp(16px, 3vh, 32px);
 }
 
 .curation-eyebrow {
@@ -1814,9 +1820,9 @@ td.num {
 
 .curation-title {
   font-family: var(--ff-display);
-  font-size: clamp(24px, 3vw, 40px);
+  font-size: clamp(28px, 3.5vw, 48px);
   color: #fffdfa;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 .category-salon-grid {
@@ -1857,17 +1863,17 @@ td.num {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .category-crest {
   color: #d4af37;
-  font-size: 18px;
+  font-size: 22px;
 }
 
 .category-name {
   font-family: var(--ff-display);
-  font-size: 1.8rem;
+  font-size: clamp(1.6rem, 2.2vw, 2.4rem);
   color: #fffdfa;
   margin: 0;
 }

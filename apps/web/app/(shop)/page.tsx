@@ -58,7 +58,6 @@ export default async function HomePage() {
                 <div className="category-card-content">
                   <span className="category-crest">✦</span>
                   <h3 className="category-name">{cat.name}</h3>
-                  <span className="category-cta">Explore Salon →</span>
                 </div>
               </Link>
             ))}
