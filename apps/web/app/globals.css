@@ -1510,12 +1510,17 @@ td.num {
 
 /* ---- Secondary Section: Product Rail (Atelier Vault Marquee) ---- */
 .product-rail-section {
-  padding: clamp(28px, 4vh, 42px) 0 clamp(20px, 3vh, 32px);
+  height: calc(100vh - 72px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(16px, 2.5vh, 28px) 0;
   background: radial-gradient(circle at 50% 0%, #191410 0%, #0d0b09 60%, #080706 100%);
   border-top: 1px solid rgba(212, 175, 55, 0.2);
   border-bottom: 1px solid rgba(212, 175, 55, 0.2);
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .product-rail-header {
@@ -1782,14 +1787,20 @@ td.num {
 
 /* ---- Category Salon Cards ---- */
 .category-curation-section {
-  padding: var(--s-16) 0;
+  height: calc(100vh - 72px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(16px, 2.5vh, 28px) 0;
   background: #090807;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .curation-header {
   text-align: center;
   max-width: 600px;
-  margin: 0 auto var(--s-12);
+  margin: 0 auto clamp(16px, 2.5vh, 28px);
 }
 
 .curation-eyebrow {
@@ -1803,9 +1814,9 @@ td.num {
 
 .curation-title {
   font-family: var(--ff-display);
-  font-size: clamp(32px, 4vw, 50px);
+  font-size: clamp(24px, 3vw, 40px);
   color: #fffdfa;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 .category-salon-grid {
@@ -1816,7 +1827,7 @@ td.num {
 
 .category-salon-card {
   position: relative;
-  height: 240px;
+  height: clamp(160px, 28vh, 240px);
   background: linear-gradient(135deg, #181410 0%, #0d0b09 100%);
   border: 1px solid rgba(212, 175, 55, 0.2);
   text-decoration: none;
@@ -1865,14 +1876,15 @@ td.num {
 
 /* ---- Craftsmanship Pillars ---- */
 .craftsmanship-section {
-  min-height: 100vh;
+  height: calc(100vh - 72px);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(20px, 3vh, 40px) 0;
+  padding: clamp(16px, 2.5vh, 28px) 0;
   background: #0e0c0a;
   border-top: 1px solid rgba(212, 175, 55, 0.15);
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .craftsmanship-header {
