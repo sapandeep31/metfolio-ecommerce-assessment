@@ -44,6 +44,14 @@ const mono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: 'Metfolio Atelier | Fine Jewelry & Diamonds',
   description: 'Handcrafted luxury diamond rings, necklaces, earrings, and fine jewelry with real-time stock protection.',
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: 'any' },
+    ],
+    shortcut: '/icon.svg',
+    apple: '/apple-touch-icon.png',
+  },
 };
 
 /**
