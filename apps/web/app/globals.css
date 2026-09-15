@@ -1821,13 +1821,20 @@ td.num {
 
 .category-salon-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: var(--s-6);
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(12px, 1.5vw, 24px);
+  flex: 1;
+  min-height: 0;
+}
+
+@media (max-width: 768px) {
+  .category-salon-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .category-salon-card {
   position: relative;
-  height: clamp(160px, 28vh, 240px);
   background: linear-gradient(135deg, #181410 0%, #0d0b09 100%);
   border: 1px solid rgba(212, 175, 55, 0.2);
   text-decoration: none;
