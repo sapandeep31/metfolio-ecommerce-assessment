@@ -201,6 +201,21 @@ export function createStripeGateway(options: StripeDriverOptions): PaymentGatewa
         throw new Error('refundPayment requires paymentIntentId or chargeId');
       }
 
+      // If an order was created using the mock checkout flow (e.g. during E2E/test runs
+      // or demo checkouts), its paymentIntentId is prefixed with `pi_mock_` or `ch_mock_`.
+      // Stripe's API will reject this with a 400 error. Intercept and mock the response
+      // so the admin refund and inventory restock flow succeed smoothly.
+      if (
+        (params.paymentIntentId && params.paymentIntentId.startsWith('pi_mock_')) ||
+        (params.chargeId && params.chargeId.startsWith('ch_mock_'))
+      ) {
+        return {
+          refundId: `re_mock_${params.paymentIntentId ?? params.chargeId}`,
+          status: 'succeeded',
+          amountCents: params.amountCents ?? 0,
+        };
+      }
+
       const idempotencyKey = `refund:${params.orderId ?? params.paymentIntentId ?? params.chargeId}:${params.amountCents ?? 'full'}`;
 
       const refund = await stripe.refunds.create(

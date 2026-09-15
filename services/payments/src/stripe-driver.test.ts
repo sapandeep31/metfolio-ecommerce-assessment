@@ -357,4 +357,33 @@ describe('createStripeGateway', () => {
       { idempotencyKey: 'refund:order_1:14900' },
     );
   });
+
+  it('handles mock payment intent ids without calling stripe', async () => {
+    const refundCreate = vi.fn();
+    const client = {
+      checkout: { sessions: { create: vi.fn() } },
+      refunds: { create: refundCreate },
+      webhooks: { constructEvent: vi.fn() },
+    } as unknown as Stripe;
+
+    const gateway = createStripeGateway({
+      secretKey: 'sk_test',
+      webhookSecret: 'whsec_test',
+      currency: 'usd',
+      client,
+    });
+
+    const result = await gateway.refundPayment({
+      orderId: 'order_mock',
+      paymentIntentId: 'pi_mock_8b2b0b8fb6fb8e0e',
+      amountCents: 5000,
+    });
+
+    expect(result).toEqual({
+      refundId: 're_mock_pi_mock_8b2b0b8fb6fb8e0e',
+      status: 'succeeded',
+      amountCents: 5000,
+    });
+    expect(refundCreate).not.toHaveBeenCalled();
+  });
 });
