@@ -1865,20 +1865,25 @@ td.num {
 
 /* ---- Craftsmanship Pillars ---- */
 .craftsmanship-section {
-  padding: var(--s-20) 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(20px, 3vh, 40px) 0;
   background: #0e0c0a;
   border-top: 1px solid rgba(212, 175, 55, 0.15);
+  box-sizing: border-box;
 }
 
 .craftsmanship-header {
-  max-width: 720px;
-  margin-bottom: var(--s-12);
+  max-width: 780px;
+  margin-bottom: clamp(12px, 1.8vh, 18px);
 }
 
 .craftsmanship-eyebrow {
   font-family: var(--ff-ui);
-  font-size: 11px;
-  letter-spacing: 0.25em;
+  font-size: 10px;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: #d4af37;
   font-weight: 600;
@@ -1886,52 +1891,58 @@ td.num {
 
 .craftsmanship-title {
   font-family: var(--ff-display);
-  font-size: clamp(34px, 4.5vw, 56px);
+  font-size: clamp(22px, 2.4vw, 32px);
   color: #fffdfa;
-  margin: 8px 0 16px;
-  line-height: 1.1;
+  margin: 3px 0 6px;
+  line-height: 1.15;
 }
 
 .craftsmanship-lead {
-  font-size: 17px;
+  font-size: clamp(12px, 1vw, 14px);
   color: #c2b7a8;
-  line-height: 1.6;
+  line-height: 1.45;
 }
 
 .craftsmanship-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--s-8);
-  margin-bottom: var(--s-16);
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(12px, 1.6vw, 20px);
+  margin-bottom: clamp(12px, 1.8vh, 20px);
+}
+
+@media (max-width: 768px) {
+  .craftsmanship-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .craft-card {
   background: rgba(255, 255, 255, 0.02);
   border-top: 1px solid rgba(212, 175, 55, 0.3);
-  padding-top: var(--s-6);
+  padding-top: clamp(8px, 1.2vh, 12px);
   display: flex;
   flex-direction: column;
-  gap: var(--s-2);
+  gap: 4px;
 }
 
 .craft-number {
   font-family: var(--ff-mono);
-  font-size: 12px;
+  font-size: 11px;
   color: #d4af37;
   letter-spacing: 0.1em;
 }
 
 .craft-card-title {
   font-family: var(--ff-display);
-  font-size: 1.4rem;
+  font-size: clamp(1rem, 1.1vw, 1.18rem);
   color: #fffdfa;
   margin: 0;
 }
 
 .craft-card-desc {
   font-family: var(--ff-ui);
-  font-size: 14px;
-  line-height: 1.7;
+  font-size: clamp(11.5px, 0.85vw, 12.5px);
+  line-height: 1.48;
   color: #a4998a;
   margin: 0;
 }
@@ -1939,17 +1950,17 @@ td.num {
 .salon-banner {
   background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(14, 12, 10, 0.8) 100%);
   border: 1px solid rgba(212, 175, 55, 0.35);
-  padding: clamp(32px, 5vw, 64px);
+  padding: clamp(12px, 1.6vh, 20px) clamp(16px, 2.5vw, 28px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--s-8);
+  gap: var(--s-4);
   flex-wrap: wrap;
 }
 
 .salon-eyebrow {
   font-family: var(--ff-ui);
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: #d4af37;
@@ -1958,17 +1969,22 @@ td.num {
 
 .salon-title {
   font-family: var(--ff-display);
-  font-size: clamp(28px, 3.5vw, 44px);
+  font-size: clamp(18px, 1.8vw, 24px);
   color: #fffdfa;
-  margin: 6px 0 12px;
+  margin: 2px 0 4px;
+  line-height: 1.2;
 }
 
 .salon-desc {
-  font-size: 15px;
+  font-size: clamp(11.5px, 0.9vw, 13px);
   color: #c9bea7;
-  max-width: 600px;
+  max-width: 640px;
   margin: 0;
-  line-height: 1.6;
+  line-height: 1.42;
+}
+
+.salon-action .btn {
+  white-space: nowrap;
 }
 
 /* ---- Luxury Product Card Enhancements ---- */

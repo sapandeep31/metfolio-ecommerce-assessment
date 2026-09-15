@@ -1,6 +1,5 @@
 import type { Category, ProductList } from '@shop/shared';
 import Link from 'next/link';
-import { ProductCard } from '@/components/product-card';
 import { ProductRail } from '@/components/product-rail';
 import { ScrollyHero } from '@/components/scrolly-hero';
 import { CraftsmanshipSection } from '@/components/craftsmanship-section';
@@ -67,34 +66,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 4. Complete Catalog Grid */}
-      <section className="catalog-preview-section">
-        <div className="container-wide">
-          <div className="row between" style={{ marginBottom: 32, alignItems: 'flex-end' }}>
-            <div>
-              <span className="product-rail-eyebrow">ACTIVE ALLOCATIONS</span>
-              <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', margin: '4px 0 0' }}>
-                Curated Inventory
-              </h2>
-            </div>
-            <Link href="/products" className="btn btn-outline">
-              View All 8 Creations →
-            </Link>
-          </div>
-
-          {featured.items.length === 0 ? (
-            <p className="empty">No active pieces currently in vault</p>
-          ) : (
-            <div className="products">
-              {featured.items.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* 5. Craftsmanship & Provenance Pillars */}
+      {/* 4. Craftsmanship & Provenance Pillars */}
       <CraftsmanshipSection />
     </main>
   );
