@@ -1508,112 +1508,223 @@ td.num {
   50% { transform: translateY(6px); }
 }
 
-/* ---- Secondary Section: Product Rail ---- */
+/* ---- Secondary Section: Product Rail (Atelier Vault Marquee) ---- */
 .product-rail-section {
-  padding: var(--s-16) 0;
-  background: #0d0b09;
-  border-top: 1px solid rgba(212, 175, 55, 0.15);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+  padding: var(--s-16) 0 var(--s-12);
+  background: radial-gradient(circle at 50% 0%, #191410 0%, #0d0b09 60%, #080706 100%);
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  position: relative;
+  overflow: hidden;
 }
 
 .product-rail-header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: var(--s-8);
-  gap: var(--s-4);
+  margin-bottom: var(--s-10);
+  gap: var(--s-6);
+}
+
+.product-rail-header-text {
+  max-width: 680px;
 }
 
 .product-rail-eyebrow {
   font-family: var(--ff-ui);
   font-size: 11px;
-  letter-spacing: 0.22em;
-  color: #7a5800;
+  letter-spacing: 0.24em;
+  color: #e5c365;
   text-transform: uppercase;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .product-rail-eyebrow {
-    color: #e5c365;
-  }
+.vault-eyebrow-crest {
+  color: #d4af37;
+  font-size: 10px;
 }
-
-.product-rail-section .product-rail-eyebrow {
-  color: #e5c365;
-}
-
 
 .product-rail-title {
   font-family: var(--ff-display);
-  font-size: clamp(32px, 4.5vw, 54px);
+  font-size: clamp(34px, 4.5vw, 56px);
   color: #fffdfa;
-  margin: 6px 0;
+  margin: 8px 0;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+  line-height: 1.1;
 }
 
 .product-rail-subtitle {
   font-family: var(--ff-ui);
   font-size: 15px;
-  color: #a89e90;
-  max-width: 580px;
+  color: #b8ac9c;
+  max-width: 600px;
   margin: 0;
+  line-height: 1.6;
+}
+
+.product-rail-controls-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+/* Live Stream Status Pill */
+.vault-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(22, 18, 14, 0.9);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all var(--motion-base) var(--ease);
+}
+
+.vault-status-indicator {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  transition: all var(--motion-base) var(--ease);
+}
+
+.vault-status-pill.is-streaming .vault-status-indicator {
+  background: #5fd08a;
+  box-shadow: 0 0 8px #5fd08a;
+  animation: vaultPulseDot 2s ease-in-out infinite;
+}
+
+.vault-status-pill.is-paused .vault-status-indicator {
+  background: #d4af37;
+  box-shadow: 0 0 8px #d4af37;
+}
+
+.vault-status-text {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: #e5c365;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+@keyframes vaultPulseDot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
 }
 
 .product-rail-controls {
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 
-.rail-arrow-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(212, 175, 55, 0.3);
+.rail-ctrl-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(212, 175, 55, 0.28);
   color: #d4af37;
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 16px;
   transition: all var(--motion-fast) var(--ease);
+  backdrop-filter: blur(8px);
 }
 
-.rail-arrow-btn:hover {
+.rail-ctrl-btn:hover {
   background: #d4af37;
   color: #0b0907;
+  border-color: #d4af37;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.35);
 }
 
-.product-rail-track {
+.rail-ctrl-btn.is-active {
+  border-color: rgba(212, 175, 55, 0.8);
+  background: rgba(212, 175, 55, 0.15);
+}
+
+.rail-play-pause-btn {
+  font-size: 12px;
+  font-weight: 700;
+  width: 44px;
+  height: 44px;
+  border-color: rgba(212, 175, 55, 0.45);
+}
+
+/* Edge-vignetted Marquee Viewport */
+.product-rail-marquee-viewport {
+  width: 100%;
+  overflow: hidden;
+  padding: var(--s-4) 0 var(--s-8);
+  position: relative;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 1) 6%, rgba(0, 0, 0, 1) 94%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 1) 6%, rgba(0, 0, 0, 1) 94%, transparent 100%);
+}
+
+/* Marquee Track */
+.product-rail-marquee-track {
   display: flex;
   gap: var(--s-6);
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  padding-bottom: var(--s-4);
-  scrollbar-width: thin;
-  scrollbar-color: rgba(212, 175, 55, 0.4) transparent;
+  width: max-content;
+  will-change: transform;
+  animation: vaultMarquee 48s linear infinite;
 }
 
-.product-rail-track::-webkit-scrollbar {
-  height: 4px;
+@keyframes vaultMarquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
 }
 
-.product-rail-track::-webkit-scrollbar-thumb {
-  background: rgba(212, 175, 55, 0.4);
-  border-radius: 4px;
+/* Hover over viewport or any card pauses the stream smoothly */
+.product-rail-marquee-viewport:hover .product-rail-marquee-track,
+.product-rail-marquee-viewport:focus-within .product-rail-marquee-track,
+.product-rail-marquee-track.manual-paused {
+  animation-play-state: paused !important;
 }
 
+/* Reverse Direction */
+.product-rail-marquee-track.marquee-reverse {
+  animation-direction: reverse;
+}
+
+/* Luxury Rail Card */
 .luxury-rail-card {
-  flex: 0 0 310px;
-  background: #14110e;
-  border: 1px solid rgba(212, 175, 55, 0.14);
-  transition: transform var(--motion-base) var(--ease), border-color var(--motion-base) var(--ease), box-shadow var(--motion-base) var(--ease);
+  flex: 0 0 320px;
+  width: 320px;
+  background: linear-gradient(180deg, #17130e 0%, #0e0c0a 100%);
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1), border-color 0.4s ease, box-shadow 0.4s cubic-bezier(0.2, 0, 0, 1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  position: relative;
 }
 
 .luxury-rail-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(212, 175, 55, 0.5);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 1px rgba(212, 175, 55, 0.5);
+  transform: translateY(-8px) scale(1.015);
+  border-color: rgba(212, 175, 55, 0.6);
+  box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.85), 0 0 30px -4px rgba(212, 175, 55, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .rail-card-link {
@@ -1626,7 +1737,7 @@ td.num {
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 5;
-  background: #1b1713;
+  background: #14110e;
   overflow: hidden;
 }
 
@@ -1634,11 +1745,24 @@ td.num {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--motion-slow) var(--ease);
+  transition: transform 0.65s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .luxury-rail-card:hover .rail-card-img {
-  transform: scale(1.05);
+  transform: scale(1.08);
+}
+
+.rail-card-shimmer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 40%, rgba(212, 175, 55, 0.12) 60%, transparent 100%);
+}
+
+.luxury-rail-card:hover .rail-card-shimmer {
+  opacity: 1;
 }
 
 .rail-card-placeholder {
@@ -1652,63 +1776,236 @@ td.num {
   color: #7d705c;
 }
 
+.rail-card-specimen-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  background: rgba(12, 10, 8, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  color: #e5c365;
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 2px;
+}
+
 .rail-card-badge {
   position: absolute;
   top: 12px;
   right: 12px;
-  background: rgba(14, 11, 9, 0.85);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  z-index: 2;
+  background: rgba(12, 10, 8, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(212, 175, 55, 0.25);
   color: #d4af37;
   font-family: var(--ff-ui);
   font-size: 10px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   padding: 4px 8px;
+  border-radius: 2px;
+}
+
+.rail-card-hover-action {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  background: linear-gradient(180deg, transparent 0%, rgba(10, 8, 6, 0.95) 100%);
+  padding: 24px 16px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.2, 0, 0, 1), opacity 0.35s ease;
+}
+
+.rail-card-hover-action span {
+  font-family: var(--ff-ui);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #fffdfa;
+  background: rgba(212, 175, 55, 0.22);
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  padding: 6px 16px;
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.luxury-rail-card:hover .rail-card-hover-action {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.luxury-rail-card:hover .rail-card-hover-action span:hover {
+  background: #d4af37;
+  color: #0b0907;
 }
 
 .rail-card-body {
   padding: var(--s-5);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  background: #0f0d0b;
+  border-top: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.rail-card-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 2px;
 }
 
 .rail-card-sku {
   font-family: var(--ff-mono);
   font-size: 10px;
-  color: #9f9485;
-  letter-spacing: 0.05em;
+  color: #9a8f80;
+  letter-spacing: 0.08em;
+}
+
+.rail-card-status-dot {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  color: #78e09f;
+  letter-spacing: 0.06em;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  text-transform: uppercase;
+}
+
+.status-live-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #5fd08a;
+  display: inline-block;
+  box-shadow: 0 0 6px rgba(95, 208, 138, 0.7);
 }
 
 .rail-card-title {
   font-family: var(--ff-display);
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   color: #fffdfa;
-  margin: 2px 0 6px;
-  line-height: 1.2;
+  margin: 4px 0 8px;
+  line-height: 1.25;
+  font-weight: 400;
+  transition: color 0.2s ease;
+}
+
+.luxury-rail-card:hover .rail-card-title {
+  color: #f3e5b8;
 }
 
 .rail-card-pricing {
   display: flex;
-  align-items: baseline;
+  align-items: flex-end;
   justify-content: space-between;
-  margin-top: 6px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
-  padding-top: 8px;
+  padding-top: 10px;
+  margin-top: 4px;
+}
+
+.rail-card-price-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rail-card-from-label {
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: #8a7f72;
+  text-transform: uppercase;
 }
 
 .rail-card-price {
   font-family: var(--ff-display);
-  font-size: 1.15rem;
+  font-size: 1.25rem;
   color: #d4af37;
+  font-weight: 500;
 }
 
-.rail-card-status {
+.rail-card-craft-pill {
   font-family: var(--ff-ui);
-  font-size: 11px;
-  color: #5fd08a;
+  font-size: 10px;
+  color: #aba092;
   letter-spacing: 0.04em;
+}
+
+.vault-bottom-bar {
+  margin-top: var(--s-6);
+  border-top: 1px solid rgba(212, 175, 55, 0.12);
+  padding-top: var(--s-4);
+}
+
+.vault-stream-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+}
+
+.vault-stream-hint {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: #807669;
+  text-transform: uppercase;
+}
+
+.vault-view-all-link {
+  font-family: var(--ff-ui);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: #d4af37;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.vault-view-all-link:hover {
+  color: #f3e5b8;
+  transform: translateX(3px);
+}
+
+@media (max-width: 768px) {
+  .product-rail-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .product-rail-controls-group {
+    align-items: flex-start;
+  }
+  .luxury-rail-card {
+    flex: 0 0 280px;
+    width: 280px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-rail-marquee-track {
+    animation: none !important;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
 }
 
 /* ---- Category Salon Cards ---- */
