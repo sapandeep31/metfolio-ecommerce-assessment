@@ -15,6 +15,16 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
+  // Skip remote token refresh if the caller holds no auth cookies at all.
+  // This eliminates a blocking network roundtrip on every page navigation for anonymous visitors.
+  const allCookies = request.cookies.getAll();
+  const hasAuthCookie = allCookies.some(
+    (c) => c.name.startsWith('sb-') || c.name.includes('auth-token') || c.name.startsWith('authjs.'),
+  );
+  if (!hasAuthCookie) {
+    return response;
+  }
+
   try {
     const supabase = createServerClient(url, anonKey, {
       cookies: {

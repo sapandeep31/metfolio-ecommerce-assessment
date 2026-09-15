@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { loginSchema, type Role } from '@shop/shared';
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
@@ -62,8 +63,11 @@ export const { handlers, signIn: nextAuthSignIn, signOut: nextAuthSignOut } = ne
  * Server-side session accessor:
  * Checks Supabase Auth first (when configured with a live instance),
  * then falls back to NextAuth (for local development, CI test suites, and seeded accounts).
+ *
+ * Wrapped in React cache() so multiple components or fetchers in the same request
+ * cycle share the session result rather than issuing redundant remote HTTP calls.
  */
-export async function auth(): Promise<Session | null> {
+export const auth = cache(async function auth(): Promise<Session | null> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   if (supabaseUrl && !supabaseUrl.includes('your-project')) {
     try {
@@ -118,4 +122,4 @@ export async function auth(): Promise<Session | null> {
   }
 
   return null;
-}
+});
