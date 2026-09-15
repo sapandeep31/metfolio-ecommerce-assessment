@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 
 export const API_BASE_URL = process.env.API_BASE_URL ?? 'http://localhost:4000';
 
@@ -16,15 +16,17 @@ export async function signIn(page: Page, email: string, password: string): Promi
 /** Add one unit of a product's first in-stock variant to the cart. */
 export async function addFirstVariantToCart(page: Page, slug: string): Promise<void> {
   await page.goto(`/products/${slug}`);
-  await page.getByTestId('add-to-cart').click();
-  // The button re-enables once the server action has committed.
-  await page.getByTestId('add-to-cart').waitFor({ state: 'visible' });
-  await page.waitForTimeout(500);
+  const addButton = page.getByTestId('add-to-cart');
+  await expect(addButton).toBeEnabled({ timeout: 15_000 });
+  await addButton.click();
+  // Wait for the cart count in the nav to reflect the added item
+  await expect(page.getByTestId('cart-count')).toHaveText(/\(\d+\)/, { timeout: 15_000 });
 }
 
 /** Fill and submit the checkout form, landing on the gateway page. */
 export async function fillCheckout(page: Page, email: string): Promise<void> {
   await page.goto('/checkout');
+  await expect(page.getByTestId('checkout-email')).toBeVisible({ timeout: 15_000 });
   await page.getByTestId('checkout-email').fill(email);
   await page.getByTestId('checkout-name').fill('Ada Lovelace');
   await page.getByTestId('checkout-line1').fill('1 Analytical Way');

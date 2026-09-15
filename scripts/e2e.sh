@@ -100,7 +100,7 @@ echo "==> Building"
 NODE_ENV=production pnpm build
 
 echo "==> Starting api, web"
-node apps/api/dist/main.js >/tmp/shop-e2e-api.log 2>&1 &
+NODE_ENV=test node apps/api/dist/main.js >/tmp/shop-e2e-api.log 2>&1 &
 API_PID=$!
 (cd apps/web && ./node_modules/.bin/next start -p "$WEB_PORT") >/tmp/shop-e2e-web.log 2>&1 &
 WEB_PID=$!

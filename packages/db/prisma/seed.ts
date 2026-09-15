@@ -138,8 +138,7 @@ const PRODUCTS: SeedProduct[] = [
       'with adjustable jump rings at 16, 17, and 18 inches.',
     category: 'necklaces',
     variants: [
-      { sku: 'NCK-EM-YG', name: '18k Yellow Gold', priceCents: 189000, stockOnHand: 25 },
-      { sku: 'NCK-EM-PLT', name: 'Platinum', priceCents: 215000, stockOnHand: 12 },
+      { sku: 'NCK-EM-YG', name: '18k Yellow Gold / 1.2ct', priceCents: 189000, stockOnHand: 25 },
     ],
   },
   {

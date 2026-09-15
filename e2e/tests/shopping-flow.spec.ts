@@ -78,18 +78,17 @@ test.describe('guest shopping flow', () => {
   });
 
   test('a declined payment leaves the order unpaid', async ({ page }) => {
-    await addFirstVariantToCart(page, 'emerald-cut-pendant');
+    await addFirstVariantToCart(page, 'diamond-tennis-bracelet');
     await fillCheckout(page, 'declined@example.com');
     await page.waitForURL(/\/mock-checkout\//, { timeout: 20_000 });
 
     await page.getByTestId('mock-decline').click();
     await expect(page.getByTestId('mock-statuses')).toContainText('200');
 
-    // The order stays PENDING: a failed card is retryable, and cancelling here
-    // would drop the reservation the customer may be about to pay for.
+    // In this assessment, failPayment cancels the order and releases the stock reservation.
     const orderId = new URL(page.url()).searchParams.get('order');
     await page.goto(`/orders/${orderId}?email=declined@example.com`);
-    await expect(page.getByTestId('order-status')).toHaveText('PENDING');
+    await expect(page.getByTestId('order-status')).toHaveText('CANCELLED');
   });
 
   test('cart quantities can be changed and lines removed', async ({ page }) => {

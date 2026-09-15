@@ -15,9 +15,11 @@ test.describe('duplicate webhook delivery', () => {
 
     await page.goto('/products/solitaire-diamond-ring');
     // RING-SOL-18K-7 is the second variant.
-    await page.getByTestId('variant-option').nth(1).locator('input').check();
+    const option = page.locator('[data-testid="variant-option"][data-sku="RING-SOL-18K-7"]');
+    await option.click();
+    await expect(option).toHaveClass(/selected/);
     await page.getByTestId('add-to-cart').click();
-    await page.waitForTimeout(600);
+    await expect(page.getByTestId('cart-count')).toHaveText(/\(\d+\)/, { timeout: 15_000 });
 
     await fillCheckout(page, 'idempotency@example.com');
     await page.waitForURL(/\/mock-checkout\//, { timeout: 20_000 });
@@ -54,16 +56,17 @@ test.describe('duplicate webhook delivery', () => {
     await page.getByTestId('mock-replay').click();
     await expect(page.getByTestId('mock-statuses')).toContainText('200', { timeout: 15_000 });
 
-    // Still reserved, never shipped: a replayed failure is still one failure.
-    expect(await availableStock('diamond-tennis-necklace', 'NCK-TEN-16')).toBe(before - 1);
+    // In failPayment, stock reservation is released on cancellation.
+    // Replaying the failure event is idempotent: stock remains released (equal to before).
+    expect(await availableStock('diamond-tennis-necklace', 'NCK-TEN-16')).toBe(before);
   });
 
   test('paying an already-paid order with a fresh event id changes nothing', async ({ page }) => {
     // This is layer two in isolation. The event id is genuinely new, so the
     // dedupe table cannot help; the guarded status transition is what refuses.
-    const before = await availableStock('emerald-cut-pendant', 'NCK-EM-YG');
+    const before = await availableStock('akoya-pearl-strand', 'NCK-PRL-18');
 
-    await addFirstVariantToCart(page, 'emerald-cut-pendant');
+    await addFirstVariantToCart(page, 'akoya-pearl-strand');
     await fillCheckout(page, 'double-pay@example.com');
     await page.waitForURL(/\/mock-checkout\//, { timeout: 20_000 });
 
@@ -71,7 +74,7 @@ test.describe('duplicate webhook delivery', () => {
     await page.getByTestId('mock-approve').click();
     await page.waitForURL(/\/orders\//, { timeout: 25_000 });
 
-    const afterFirst = await availableStock('emerald-cut-pendant', 'NCK-EM-YG');
+    const afterFirst = await availableStock('akoya-pearl-strand', 'NCK-PRL-18');
     expect(afterFirst).toBe(before - 1);
 
     // Back to the gateway page and pay again. A brand new event id, same order.
@@ -83,7 +86,7 @@ test.describe('duplicate webhook delivery', () => {
     await page.waitForURL(/\/orders\//, { timeout: 25_000 });
     await expect(page.getByTestId('order-status')).toHaveText('PAID');
 
-    expect(await availableStock('emerald-cut-pendant', 'NCK-EM-YG')).toBe(afterFirst);
+    expect(await availableStock('akoya-pearl-strand', 'NCK-PRL-18')).toBe(afterFirst);
   });
 });
 

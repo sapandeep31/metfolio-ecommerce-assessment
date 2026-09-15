@@ -68,8 +68,8 @@ test.describe('admin', () => {
     await signIn(page, ADMIN.email, ADMIN.password);
     await page.goto('/admin/stock');
 
-    const row = page.locator('[data-testid="stock-row"][data-sku="CBL-150"]');
-    const before = Number(await page.getByTestId('onhand-CBL-150').textContent());
+    const row = page.locator('[data-testid="stock-row"][data-sku="EAR-SOL-1CT"]');
+    const before = Number(await page.getByTestId('onhand-EAR-SOL-1CT').textContent());
 
     const qtyInput = row.locator('[data-testid^="stock-qty-"]');
     const id = (await qtyInput.getAttribute('data-testid'))!.replace('stock-qty-', '');
@@ -77,13 +77,13 @@ test.describe('admin', () => {
     await page.getByTestId(`stock-reason-${id}`).fill('e2e restock');
     await page.getByTestId(`restock-${id}`).click();
 
-    await expect(page.getByTestId('onhand-CBL-150')).toHaveText(String(before + 5), {
+    await expect(page.getByTestId('onhand-EAR-SOL-1CT')).toHaveText(String(before + 5), {
       timeout: 15_000,
     });
 
     await page.goto('/admin/ledger');
     const ledgerRow = page.locator('[data-testid="ledger-row"][data-kind="RESTOCK"]').first();
-    await expect(ledgerRow).toContainText('CBL-150');
+    await expect(ledgerRow).toContainText('EAR-SOL-1CT');
     await expect(ledgerRow).toContainText('+5');
     await expect(ledgerRow).toContainText('e2e restock');
   });
@@ -94,7 +94,7 @@ test.describe('admin', () => {
     // must be told why rather than seeing the number silently not change.
     const shopper = await browser.newContext();
     const shopperPage = await shopper.newPage();
-    await addFirstVariantToCart(shopperPage, 'monitor-speaker');
+    await addFirstVariantToCart(shopperPage, 'diamond-tennis-necklace');
     await fillCheckout(shopperPage, 'reserver@example.com');
     await shopperPage.waitForURL(/\/mock-checkout\//, { timeout: 20_000 });
     await shopper.close();
@@ -102,7 +102,7 @@ test.describe('admin', () => {
     await signIn(page, ADMIN.email, ADMIN.password);
     await page.goto('/admin/stock');
 
-    const sku = 'MON-BLK';
+    const sku = 'NCK-TEN-16';
     const onHand = Number(await page.getByTestId(`onhand-${sku}`).textContent());
     const reserved = Number(await page.getByTestId(`reserved-${sku}`).textContent());
     test.skip(reserved === 0, 'the reservation landed on the other variant');
@@ -124,7 +124,7 @@ test.describe('admin', () => {
   test('fulfils a paid order', async ({ page, browser }) => {
     const shopper = await browser.newContext();
     const shopperPage = await shopper.newPage();
-    await addFirstVariantToCart(shopperPage, 'watch-pro');
+    await addFirstVariantToCart(shopperPage, 'akoya-pearl-strand');
     await fillCheckout(shopperPage, 'fulfil-me@example.com');
     await shopperPage.waitForURL(/\/mock-checkout\//, { timeout: 20_000 });
     await shopperPage.getByTestId('mock-approve').click();
@@ -140,6 +140,7 @@ test.describe('admin', () => {
     const row = page.locator(`[data-testid="admin-order-row"][data-number="${orderNumber}"]`);
     await expect(row).toBeVisible({ timeout: 15_000 });
     await page.getByTestId(`fulfill-${orderNumber}`).click();
+    await expect(page.getByTestId(`fulfill-${orderNumber}`)).toBeHidden({ timeout: 15_000 });
 
     await page.goto('/admin/orders?status=FULFILLED');
     await expect(

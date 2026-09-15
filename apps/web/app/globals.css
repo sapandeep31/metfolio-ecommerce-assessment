@@ -1202,6 +1202,23 @@ td.num {
   color: #fffdfa;
 }
 
+.login-link,
+.orders-link {
+  font-family: var(--ff-ui);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #d8cebf !important;
+  text-decoration: none;
+  padding: 6px 0;
+  transition: color var(--motion-fast);
+}
+
+.login-link:hover,
+.orders-link:hover {
+  color: #fffdfa !important;
+}
+
 @media (max-width: 840px) {
   .nav-center-links {
     display: none;
@@ -1495,10 +1512,21 @@ td.num {
   font-family: var(--ff-ui);
   font-size: 11px;
   letter-spacing: 0.22em;
-  color: #d4af37;
+  color: #7a5800;
   text-transform: uppercase;
   font-weight: 600;
 }
+
+@media (prefers-color-scheme: dark) {
+  .product-rail-eyebrow {
+    color: #e5c365;
+  }
+}
+
+.product-rail-section .product-rail-eyebrow {
+  color: #e5c365;
+}
+
 
 .product-rail-title {
   font-family: var(--ff-display);
@@ -1892,8 +1920,14 @@ td.num {
 }
 
 .product-stock-pill {
-  color: #5fd08a !important;
+  color: #1a6e38 !important;
   font-size: 11px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .product-stock-pill {
+    color: #5fd08a !important;
+  }
 }
 
 /* ---- PDP Trust Matrix ---- */

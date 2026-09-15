@@ -158,14 +158,12 @@ export class CatalogService {
 
   /** Storefront product page. 404 on anything not ACTIVE. */
   async getProductBySlug(slug: string): Promise<Product> {
-    return this.cache.getOrSet(`catalog:slug:${slug}`, async () => {
-      const row = await this.prisma.product.findFirst({
-        where: { slug, status: 'ACTIVE' },
-        include: PRODUCT_INCLUDE,
-      });
-      if (!row) throw new NotFoundException('Product not found');
-      return this.toProduct(row);
+    const row = await this.prisma.product.findFirst({
+      where: { slug, status: 'ACTIVE' },
+      include: PRODUCT_INCLUDE,
     });
+    if (!row) throw new NotFoundException('Product not found');
+    return this.toProduct(row);
   }
 
   /**

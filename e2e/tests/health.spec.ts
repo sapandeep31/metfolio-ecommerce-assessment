@@ -22,7 +22,7 @@ test.describe('health', () => {
 
   test('the storefront renders', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByRole('heading', { name: /hardware, sold correctly/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /the art of the unrepeatable/i })).toBeVisible();
     await expect(page.getByTestId('cart-link')).toBeVisible();
   });
 
