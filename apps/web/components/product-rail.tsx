@@ -103,8 +103,9 @@ export function ProductRail({
   title?: string;
   subtitle?: string;
 }) {
+  const hasRealProducts = Boolean(products && products.length > 0);
   // Fallback to curated specimens if empty catalog or offline fallback
-  const activeProducts = products && products.length > 0 ? products : ARCHIVAL_FALLBACK_SPECIMENS;
+  const activeProducts = hasRealProducts ? products : ARCHIVAL_FALLBACK_SPECIMENS;
 
   // Duplicate items for a seamless, continuous infinite marquee loop
   const duplicatedItems = [...activeProducts, ...activeProducts];
@@ -136,6 +137,7 @@ export function ProductRail({
               <article
                 key={`${product.id}-cycle-${index}`}
                 className="luxury-rail-card"
+                {...(hasRealProducts ? { 'data-testid': 'product-card', 'data-slug': product.slug } : {})}
               >
                 <Link href={`/products/${product.slug}`} className="rail-card-link">
                   {/* Clean Card Media */}
