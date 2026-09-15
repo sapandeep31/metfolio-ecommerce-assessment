@@ -61,6 +61,11 @@ export function isUniqueViolation(err: unknown): boolean {
   return pgError(err)?.code === PG_UNIQUE_VIOLATION;
 }
 
+export const DEFAULT_TRANSACTION_OPTIONS = {
+  maxWait: 10000,
+  timeout: 25000,
+} as const;
+
 let client: PrismaClient | undefined;
 
 /**
@@ -68,6 +73,10 @@ let client: PrismaClient | undefined;
  * otherwise open a new pool per module instance and exhaust Postgres.
  */
 export function getPrisma(): PrismaClient {
-  if (!client) client = new PrismaClient();
+  if (!client) {
+    client = new PrismaClient({
+      transactionOptions: DEFAULT_TRANSACTION_OPTIONS,
+    });
+  }
   return client;
 }

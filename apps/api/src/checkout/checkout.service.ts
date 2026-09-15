@@ -13,7 +13,7 @@ import { PAYMENTS } from '../core/core.module';
 import { InventoryService, type StockLine } from '../inventory/inventory.service';
 import { ReservationSweepService } from '../inventory/reservation-sweep.service';
 import { mintOrderAccessToken } from '../orders/order-access-token';
-import { PrismaService } from '../prisma/prisma.service';
+import { DEFAULT_TRANSACTION_OPTIONS, PrismaService } from '../prisma/prisma.service';
 
 /**
  * Checkout: turn a cart into a PENDING order that holds stock, then hand the
@@ -173,7 +173,7 @@ export class CheckoutService {
       }
 
       return order;
-    });
+    }, DEFAULT_TRANSACTION_OPTIONS);
 
     // Phase 2: the gateway call, outside the transaction.
     let session;
@@ -257,7 +257,7 @@ export class CheckoutService {
       });
       await this.inventory.release(tx, orderId, items, reason);
       return true;
-    });
+    }, DEFAULT_TRANSACTION_OPTIONS);
   }
 
   private error(

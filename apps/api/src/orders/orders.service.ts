@@ -5,7 +5,7 @@ import type { Order, OrderList, OrderListQuery, Role } from '@shop/shared';
 import { CONFIG, type AppConfig } from '../config/config';
 import { PAYMENTS } from '../core/core.module';
 import { InventoryService } from '../inventory/inventory.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { DEFAULT_TRANSACTION_OPTIONS, PrismaService } from '../prisma/prisma.service';
 import { verifyOrderAccessToken } from './order-access-token';
 
 const ORDER_INCLUDE = {
@@ -176,7 +176,7 @@ export class OrdersService {
         const items = row.items.map((i) => ({ variantId: i.variantId, quantity: i.quantity }));
         await this.inventory.restockRefunded(tx, orderId, items);
       }
-    });
+    }, DEFAULT_TRANSACTION_OPTIONS);
 
     const updatedRow = await this.prisma.order.findUnique({
       where: { id: orderId },

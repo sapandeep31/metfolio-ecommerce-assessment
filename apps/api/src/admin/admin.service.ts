@@ -21,7 +21,7 @@ import { buildStorageKey, createStorage, validateUpload, type StorageDriver } fr
 import { CatalogService } from '../catalog/catalog.service';
 import { CONFIG, type AppConfig } from '../config/config';
 import { InventoryService } from '../inventory/inventory.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { DEFAULT_TRANSACTION_OPTIONS, PrismaService } from '../prisma/prisma.service';
 
 const PRODUCT_INCLUDE = {
   category: true,
@@ -135,7 +135,7 @@ export class AdminService {
             },
           });
         }
-      });
+      }, DEFAULT_TRANSACTION_OPTIONS);
     } catch (error) {
       if (isUniqueViolation(error)) throw new ConflictException('That SKU already exists');
       throw error;
@@ -179,8 +179,10 @@ export class AdminService {
       throw new BadRequestException('Use ADJUST for a negative correction');
     }
 
-    const applied = await this.prisma.$transaction((tx) =>
-      this.inventory.adjust(tx, variantId, change.kind, change.quantity, change.reason, actorId),
+    const applied = await this.prisma.$transaction(
+      (tx) =>
+        this.inventory.adjust(tx, variantId, change.kind, change.quantity, change.reason, actorId),
+      DEFAULT_TRANSACTION_OPTIONS,
     );
 
     if (!applied) {

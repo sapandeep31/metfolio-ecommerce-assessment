@@ -4,7 +4,7 @@ import type { ParsedWebhook } from '@shop/payments';
 import { isTerminalOrderStatus } from '@shop/shared';
 import { InventoryService } from '../inventory/inventory.service';
 import { OrderEmailService } from '../notifications/order-email.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { DEFAULT_TRANSACTION_OPTIONS, PrismaService } from '../prisma/prisma.service';
 
 /**
  * What the controller should answer with. `retryable` is the important one: it
@@ -113,7 +113,7 @@ export class WebhooksService {
         });
 
         return result;
-      })
+      }, DEFAULT_TRANSACTION_OPTIONS)
       .catch((error: unknown) => {
         if (error instanceof RetryableWebhookError) {
           return {

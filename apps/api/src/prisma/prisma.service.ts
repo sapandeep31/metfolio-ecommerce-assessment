@@ -1,8 +1,16 @@
 import { Injectable, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
-import { PrismaClient } from '@shop/db';
+import { DEFAULT_TRANSACTION_OPTIONS, PrismaClient } from '@shop/db';
+
+export { DEFAULT_TRANSACTION_OPTIONS };
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+  constructor() {
+    super({
+      transactionOptions: DEFAULT_TRANSACTION_OPTIONS,
+    });
+  }
+
   async onModuleInit(): Promise<void> {
     await this.$connect();
   }

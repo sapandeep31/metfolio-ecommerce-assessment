@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { DEFAULT_TRANSACTION_OPTIONS, PrismaService } from '../prisma/prisma.service';
 import { InventoryService } from './inventory.service';
 
 export interface ReleaseResult {
@@ -90,7 +90,7 @@ export class ReservationSweepService {
       await this.inventory.release(tx, orderId, items, 'reservation-expired');
 
       return { released: true, reason: `released ${items.length} line(s)` };
-    });
+    }, DEFAULT_TRANSACTION_OPTIONS);
   }
 
   /**
