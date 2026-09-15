@@ -1143,14 +1143,30 @@ td.num {
 }
 
 .admin-link-pill {
-  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ff-ui);
+  font-size: 13px;
+  font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #d4af37 !important;
-  border: 1px solid rgba(212, 175, 55, 0.4);
-  padding: 3px 10px;
-  border-radius: var(--radius-pill);
+  color: #fffdfa !important;
+  background: rgba(212, 175, 55, 0.16);
+  border: 1px solid rgba(212, 175, 55, 0.6);
+  padding: 8px 18px;
+  border-radius: 4px;
   text-decoration: none;
+  transition: all var(--motion-fast) var(--ease);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.admin-link-pill:hover {
+  background: rgba(212, 175, 55, 0.28);
+  border-color: #d4af37;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
 }
 
 .cart-badge-link {

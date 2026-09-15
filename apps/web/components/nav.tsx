@@ -94,7 +94,7 @@ export function Nav() {
         <div className="links nav-actions">
           {state?.isAdmin && (
             <Link href="/admin" className="admin-link-pill">
-              Admin
+              Admin Panel
             </Link>
           )}
 
