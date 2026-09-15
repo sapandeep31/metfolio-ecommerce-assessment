@@ -1181,7 +1181,7 @@ td.num {
 .cart-count {
   font-family: var(--ff-mono);
   font-size: 11px;
-  color: #d4af37;
+  color: #fffdfa !important;
   font-weight: 600;
 }
 
